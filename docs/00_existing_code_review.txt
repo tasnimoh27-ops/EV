@@ -1,0 +1,139 @@
+EXISTING CODE REVIEW
+====================
+Prepared for: stress-adaptive ES placement research
+Date: 2026-04-26
+
+=============================================================
+WHAT THE EXISTING CODE DOES
+=============================================================
+
+The repository implements an IEEE 33-bus radial distribution
+network analysis toolkit, progressing from basic DistFlow
+load-flow to SOCP-OPF with Electric Spring smart-load control.
+
+Module progression (original commits):
+  Module 1-3  : Load profile and topology builders
+  Module 7    : 24-hour SOCP OPF with Qg reactive support  (optimization.m)
+  Module 8    : ES smart-load SOCP OPF  (run_socp_opf_24h_yalmip_gurobi_es.m)
+  Framework   : Multi-scenario ES runner  (run_es_scenario_framework.m)
+
+=============================================================
+IMPORTANT FILES
+=============================================================
+
+DATA FUNCTIONS (do not modify):
+  build_distflow_topology_from_branch_csv.m
+    - Reads mp_export_case33bw/branch.csv
+    - Builds BFS spanning tree, returns topo struct
+    - Fields: nb, nl_tree, root, from, to, R, X
+
+  build_24h_load_profile_from_csv.m
+    - Reads mp_export_case33bw/loads_base.csv
+    - Applies 24-hour multiplier profile (peak multiplier 1.20 at hour 20)
+    - Returns loads struct with P24, Q24 (nb x 24 matrices, p.u.)
+
+DATA FILES:
+  mp_export_case33bw/branch.csv   — IEEE 33-bus branch R, X (p.u.)
+  mp_export_case33bw/loads_base.csv — base active/reactive loads (p.u.)
+
+OPF SOLVER (core workhorse — do not break):
+  solve_es_socp_opf_case.m
+    - SOCP DistFlow OPF for one scenario (YALMIP + Gurobi)
+    - Input: params struct, topo, loads, ops (sdpsettings)
+    - Key params: es_buses, rho_val, u_min_val, lambda_u,
+                  Vmin, Vmax, soft_voltage, price, out_dir
+    - Output: res struct with V_val, u_val, loss_t, feasible, etc.
+    - If es_buses = [], runs as pure base-case OPF (no ES)
+
+MODULE 8 RUNNER:
+  run_socp_opf_24h_yalmip_gurobi_es.m
+    - Standalone script, ES at buses [18, 33], rho=0.40, u_min=0.20
+    - Good as usage example for solve_es_socp_opf_case.m
+
+MULTI-SCENARIO FRAMEWORK:
+  run_es_scenario_framework.m
+    - Runs 6 named scenarios (A-F) with different ES configs
+    - Uses solve_es_socp_opf_case.m
+
+=============================================================
+CURRENT ES MODEL
+=============================================================
+
+The ES is modelled at OPF level as a controllable NCL fraction:
+
+  P_load(j,t) = P_CL(j,t) + u(j,t) * P_NCL(j,t)
+  Q_load(j,t) = Q_CL(j,t) + u(j,t) * Q_NCL(j,t)
+
+  where P_CL = (1-rho)*Pd,  P_NCL = rho*Pd
+  and   u_min <= u(j,t) <= 1
+
+ES parameters:
+  rho_val    — NCL fraction (same for all ES buses, scalar)
+  u_min_val  — minimum NCL service factor
+  lambda_u   — curtailment penalty in objective
+
+The NCL fraction rho is the same for all ES buses in the
+current code. The new research extends this to bus-specific
+rho_j (ES sizing variable) and adds binary placement z_j.
+
+=============================================================
+WHAT NEEDS TO BE EXTENDED
+=============================================================
+
+MISSING PIECES for new research:
+1. Base-case stress scan (no ES, load multiplier sweep)
+2. CL/NCL split function with configurable NCL share + PF
+3. Bus-specific ES sizing (rho_j per bus, not scalar)
+4. Binary placement decision variable z_j (MISOCP)
+5. Greedy placement algorithm
+6. Optimized placement: MISOCP with z_j, rho_j, budget constraint
+7. Sensitivity studies (NCL share, NCL PF, ES budget)
+8. Voltage impact score for candidate ranking
+9. Benchmark comparison framework
+10. Reusable plotting functions
+
+=============================================================
+WHAT SHOULD NOT BE CHANGED
+=============================================================
+
+- build_distflow_topology_from_branch_csv.m  (topology builder)
+- build_24h_load_profile_from_csv.m          (load profile builder)
+- solve_es_socp_opf_case.m                   (core SOCP solver)
+- mp_export_case33bw/                        (raw data)
+- optimization.m                             (Module 7 baseline)
+
+=============================================================
+SOLVER DEPENDENCIES
+=============================================================
+
+Required:
+  YALMIP   — optimization modelling layer
+  Gurobi   — SOCP and MISOCP solver
+
+Not used (not needed for this study):
+  MATPOWER — data was already exported to CSV
+  CVX      — alternative to YALMIP, not used
+  MOSEK    — alternative solver, not needed
+
+=============================================================
+KEY CONSTRAINT STRUCTURE (DistFlow SOCP)
+=============================================================
+
+Variables per branch (k) and time (t):
+  P(k,t)   active power flow
+  Q(k,t)   reactive power flow
+  l(k,t)   squared current magnitude
+  v(j,t)   squared voltage magnitude at each bus j
+
+Power balance at bus j:
+  P(parent->j, t) = P_load(j,t) + sum_k P(j->child_k, t) + R(j)*l(j,t)
+
+Voltage drop:
+  v(j,t) = v(parent,t) - 2*[R*P + X*Q](parent->j,t) + (R^2+X^2)*l(j,t)
+
+SOCP relaxation cone:
+  [2*P; 2*Q; l-v_parent] norm <= l + v_parent
+
+Voltage limits:
+  Vmin^2 <= v(j,t) <= Vmax^2
+  v(root,t) = 1.0  (slack bus)

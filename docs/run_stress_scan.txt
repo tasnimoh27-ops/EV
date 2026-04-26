@@ -1,0 +1,49 @@
+run_stress_scan.m — Stressed Loading Scenario Scan
+====================================================
+
+WHAT IT DOES
+------------
+Runs the base feeder OPF (no ES) at multiple load levels to show
+when voltage violations first appear and how severe they become.
+
+Uses soft voltage constraints so the solver always converges —
+the voltage slack shows how far the feeder deviates from 0.95 pu.
+
+LOAD LEVELS
+-----------
+1.00 x base load   (standard loading)
+1.20 x base load   (moderate stress)
+1.40 x base load   (high stress)
+1.60 x base load   (severe stress)
+1.80 x base load   (extreme stress)
+
+WHAT IS RECORDED
+----------------
+For each load multiplier:
+  Feasible          — 1 if all voltages >= 0.95 pu without slack
+  Vmin_pu           — minimum voltage at peak hour (hour 20)
+  VminBus           — bus with lowest voltage
+  TotalLoss_pu      — total network active power loss
+  N_Viol_Buses      — number of buses below 0.95 pu
+  MaxViolMag_pu     — maximum voltage violation (0.95 - Vmin)
+
+INTERPRETATION
+--------------
+If base case (x1.0) is already infeasible:
+  The standard IEEE 33-bus loading already violates 0.95 pu limit.
+  ES is needed even at 1x loading.
+
+If base case is feasible but higher multipliers are not:
+  Identifies the critical multiplier where ES becomes necessary.
+
+OUTPUTS
+-------
+results/tables/stress_scan_results.csv
+results/figures/min_voltage_vs_load_multiplier.png
+results/figures/voltage_profiles_stress_levels.png
+
+HOW TO MODIFY
+-------------
+- Add more load multiplier values to lambda_vals
+- Change the analysis hour from 20 (peak) to other hours
+- Add a reactive power injection baseline for comparison

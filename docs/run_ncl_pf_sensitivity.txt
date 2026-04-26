@@ -1,0 +1,41 @@
+run_ncl_pf_sensitivity.m — NCL Power Factor Sensitivity
+========================================================
+
+WHAT IT DOES
+------------
+Studies whether resistive or inductive NCL loads change ES
+effectiveness in voltage support.
+
+This connects to the physical ES literature where:
+  - Resistive NCL (heaters, resistors): ES works on P component
+  - Inductive NCL (motors, coils): ES works on both P and Q components
+
+At OPF level, this difference is captured by Q_NCL:
+  Resistive (PF=1.00):  Q_NCL = 0 (no reactive contribution)
+  Inductive (PF=0.95):  Q_NCL = P_NCL * tan(acos(0.95)) = 0.33 * P_NCL
+  Inductive (PF=0.90):  Q_NCL = P_NCL * tan(acos(0.90)) = 0.48 * P_NCL
+  Inductive (PF=0.85):  Q_NCL = P_NCL * tan(acos(0.85)) = 0.62 * P_NCL
+
+EXPECTED RESULT
+---------------
+For lagging (inductive) NCL, reducing u(j,t) also reduces Q_NCL.
+Since voltage drop depends on both R*P + X*Q, reducing reactive
+load additionally helps voltage — so ES may be MORE effective
+with inductive NCL than resistive NCL.
+
+However, the total apparent power S_NCL is also larger for
+inductive NCL, so ES capacity (rho) rating must account for this.
+
+OUTPUTS
+-------
+results/tables/ncl_pf_sensitivity.csv
+results/figures/ncl_pf_vs_min_voltage.png
+results/figures/ncl_pf_vs_es_capacity.png
+results/figures/ncl_pf_vs_loss.png
+
+HOW TO INTERPRET
+----------------
+If PF=0.85 gives better Vmin than PF=1.00 with same N_ES_max:
+  Inductive NCL provides better voltage support capability.
+If SumRho is larger for PF=0.85:
+  ES needs more capacity to handle the reactive component.

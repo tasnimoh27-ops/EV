@@ -1,0 +1,64 @@
+run_greedy_es_placement.m — Greedy ES Placement Algorithm
+==========================================================
+
+WHAT IT DOES
+------------
+Finds a practical ES deployment by iteratively adding one ES
+unit at a time, always selecting the bus that gives the
+largest improvement in minimum voltage.
+
+This is a heuristic (approximate) method that avoids the
+computational cost of the full MISOCP (Module 10) while
+still producing a reasonable near-optimal placement.
+
+ALGORITHM
+---------
+1. Start with no ES. Run soft-constrained OPF. Record Vmin.
+2. For each unselected candidate bus j:
+     Temporarily add j to ES set.
+     Solve OPF with soft Vmin constraint.
+     Record resulting Vmin improvement.
+3. Select bus with highest Vmin improvement.
+4. Add permanently to ES set.
+5. Repeat from step 2 until feasibility restored or budget reached.
+
+KEY PARAMETERS
+--------------
+cfg.rho_val       fixed ES capacity factor (e.g. 0.60)
+cfg.u_min         minimum NCL service (e.g. 0.20)
+cfg.N_max_greedy  maximum number of ES units to add (e.g. 20)
+cfg.lambda_u      curtailment penalty (soft priority)
+
+DIFFERENCE FROM OPTIMIZED
+--------------------------
+Greedy: adds one bus at a time, reuses previous selection.
+        Cannot undo a selection. Suboptimal but fast.
+
+Optimized (MISOCP): jointly decides ALL buses at once.
+                    Can find solutions greedy misses.
+                    Slower but globally better.
+
+The greedy method is useful for:
+- Quick feasibility checks
+- Initial solution warmstart
+- Understanding which buses matter most (selection order)
+
+OUTPUTS
+-------
+results/tables/greedy_es_selection_steps.csv
+  Step | SelectedBus | Vmin_pu | TotalLoss | Feasible
+
+results/figures/greedy_min_voltage_progress.png
+  Shows Vmin rising with each ES unit added
+
+results/figures/greedy_selected_buses.png
+  Bar chart of selected bus locations
+
+HOW TO MODIFY
+-------------
+- Change cfg.rho_val to use higher/lower ES capacity
+- Set cfg.N_max_greedy to limit maximum deployment
+- Change the evaluation metric from Vmin to:
+    - number of buses above 0.95 pu
+    - total network loss
+    - voltage deviation sum

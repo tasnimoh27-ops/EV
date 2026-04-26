@@ -1,0 +1,100 @@
+RESEARCH DESIGN OVERVIEW
+========================
+Title: Stress-Adaptive ES Placement and Sizing in IEEE 33-Bus Network
+
+RESEARCH QUESTION
+-----------------
+Can Electric Spring restore voltage feasibility in a stressed radial
+distribution feeder with minimum deployment, and how do ES placement,
+ES capacity, and NCL characteristics affect its performance?
+
+MOTIVATION
+----------
+The IEEE 33-bus distribution feeder under standard loading already
+produces voltage violations below 0.95 pu at terminal buses (18, 33)
+when hard voltage limits are enforced in SOCP-OPF. Previous work
+(Module 9F, feasibility scan) showed that ES at only 2-4 buses
+cannot restore feasibility even with high NCL fraction (rho=0.8).
+This motivates the new question: what is the minimum ES deployment?
+
+KEY INSIGHT FROM MODULE 9F
+---------------------------
+Only P5 (all 32 non-slack buses) with rho >= 0.6 is feasible.
+P1 to P4 are all infeasible. This does NOT mean ES is ineffective —
+it means ES needs to be placed at the right buses. The all-bus
+approach is an upper bound. The optimized placement (Module 10)
+finds what those "right buses" are.
+
+MODEL HIERARCHY
+---------------
+Layer 1: DistFlow SOCP
+  - Power flow equations for radial network
+  - Decision: P, Q, V (squared), l (current squared)
+
+Layer 2: ES Load Control
+  - NCL splitting: P_load = P_CL + u * P_NCL
+  - Control variable: u ∈ [u_min, 1] at ES buses
+  - At non-ES buses: u = 1 (no control)
+
+Layer 3: ES Placement (NEW)
+  - Binary variable z(j) ∈ {0,1}
+  - Linking: u(j,t) ≥ 1 - z(j)*(1-u_min)
+  - Budget: sum(z) ≤ N_ES_max
+
+Layer 4: ES Sizing (NEW)
+  - Capacity variable rho(j) ∈ [0, rho_max]
+  - Curtailment constraint: 1-u(j,t) ≤ rho(j)
+  - Bounds: rho(j) ≤ rho_max * z(j)
+
+PARAMETER SPACE
+---------------
+Load multiplier : [1.0, 1.2, 1.4, 1.6, 1.8]  (Module 2)
+NCL share       : [20%, 30%, 40%, 50%]          (Module 12)
+NCL power factor: [1.00, 0.95, 0.90, 0.85]     (Module 13)
+ES budget       : [1..32]                        (Module 11)
+Placement method: manual, greedy, optimized, all-bus (Module 14)
+
+EXPECTED FINDINGS
+-----------------
+1. Base feeder violates V < 0.95 pu at buses 17-18 and 32-33
+   under standard loading (load multiplier 1.0, peak hour).
+
+2. ES at all buses (P5) is a feasibility upper bound.
+
+3. Optimized MISOCP finds a minimum feasible ES set smaller
+   than P5 — likely fewer than 10 buses.
+
+4. Greedy algorithm provides a near-optimal solution with
+   interpretable step-by-step selection.
+
+5. More NCL flexibility (higher alpha) = fewer ES units needed.
+
+6. Inductive NCL (low PF) requires slightly more ES capacity
+   because Q adjustment is also needed for voltage support.
+
+MODULE DEPENDENCY
+-----------------
+Modules 1-2 → establish feeder stress level
+Module 8 (VIS) → ranks candidates for targeted placement
+Module 9 (greedy) → heuristic placement baseline
+Module 10 (MISOCP) → main novel contribution, optimal placement
+Modules 11-13 → sensitivity analysis around Module 10
+Module 14 → benchmark showing value of optimization
+
+SOLVERS USED
+------------
+SOCP (continuous): Gurobi via YALMIP
+MISOCP (mixed integer): Gurobi via YALMIP, MIPGap=1%, TimeLimit=300s
+
+HOW TO RUN
+----------
+Single command: run main_run_es_research.m
+Individual module: run src/es/run_optimized_es_placement.m
+
+INTERPRETING RESULTS
+--------------------
+1. Vmin = 0.950 means hard constraint exactly met (feasible)
+2. Vmin < 0.950 means infeasible (soft constraint result shown)
+3. N_ES_used = number of buses where z(j) = 1 in optimal solution
+4. MeanCurt = average (1-u) at ES buses = NCL reduction fraction
+5. SumRho = total ES capacity deployed

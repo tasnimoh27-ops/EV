@@ -1,0 +1,31 @@
+run_ncl_share_sensitivity.m — NCL Share Sensitivity
+====================================================
+
+WHAT IT DOES
+------------
+Studies how the amount of flexible (non-critical) load
+available at each bus affects ES performance.
+
+Sweeps: NCL share = [20%, 30%, 40%, 50%]
+Fixed:  N_ES_max = 10, u_min = 0.20, rho_max = 0.80
+
+INTERPRETATION
+--------------
+Higher NCL share = more load can be adjusted = ES is more effective.
+Expected: fewer ES units needed as NCL share increases.
+
+PRACTICAL MEANING
+-----------------
+NCL share represents what fraction of load is "flexible" —
+appliances and processes that can be curtailed without disruption
+(water heaters, pool pumps, HVAC in flexible mode, etc.).
+
+If only 20% of load is flexible, ES needs to be deployed at
+many more buses to achieve the same voltage improvement as
+when 50% of load is flexible.
+
+OUTPUTS
+-------
+results/tables/ncl_share_sensitivity.csv
+results/figures/ncl_share_vs_min_voltage.png
+results/figures/ncl_share_vs_required_es.png

@@ -1,0 +1,70 @@
+main_run_es_research.m — Master Pipeline Script
+================================================
+
+WHAT IT DOES
+------------
+Runs all research modules in sequence with on/off flags.
+Provides a single entry point for the full research pipeline.
+
+HOW TO RUN
+----------
+1. Open MATLAB and set current directory to project root
+   (the folder containing main_run_es_research.m)
+
+2. Run:
+   main_run_es_research
+
+3. To run individual modules:
+   run('src/network/run_base_opf.m')
+   run('src/studies/run_stress_scan.m')
+   run('src/es/run_greedy_es_placement.m')
+   run('src/es/run_optimized_es_placement.m')
+   run('src/studies/run_es_budget_sensitivity.m')
+   run('src/studies/run_ncl_share_sensitivity.m')
+   run('src/studies/run_ncl_pf_sensitivity.m')
+   run('src/studies/run_benchmark_comparison.m')
+
+MODULE FLAGS (at top of script)
+--------------------------------
+run_base_case           true/false   Module 1
+run_stress_scan         true/false   Module 2
+run_vis_ranking         true/false   Module 8 (VIS score)
+run_greedy_placement    true/false   Module 9
+run_optimized_placement true/false   Module 10 (main)
+run_budget_sensitivity  true/false   Module 11
+run_ncl_share_sens      true/false   Module 12
+run_ncl_pf_sens         true/false   Module 13
+run_benchmark           true/false   Module 14
+
+RUNTIME ESTIMATES
+-----------------
+Module 1 (base OPF):         ~1 min (single SOCP)
+Module 2 (stress scan):      ~5 min (5 SOCPs, soft-constrained)
+Module 8 (VIS ranking):      <1 min (no solver)
+Module 9 (greedy):           ~30-60 min (iterative, many solves)
+Module 10 (MISOCP sweep):    ~30-60 min (7 MISOCP runs)
+Module 11 (budget sens):     ~30-60 min (11 MISOCP runs)
+Module 12 (NCL share):       ~20 min (4 MISOCP runs)
+Module 13 (NCL PF):          ~20 min (4 MISOCP runs)
+Module 14 (benchmark):       ~30 min (7 strategies)
+
+Total full pipeline: ~3-5 hours
+
+For quick testing, set run_greedy_placement=false and
+reduce cfg.N_ES_max_list in run_optimized_es_placement.m.
+
+OUTPUT FOLDERS
+--------------
+results/tables/   CSV files with numerical results
+results/figures/  PNG and FIG figures
+results/mat_files/ MATLAB .mat files for post-processing
+
+DEPENDENCIES
+------------
+YALMIP (optimization modelling)
+Gurobi (SOCP and MISOCP solver)
+build_distflow_topology_from_branch_csv.m
+build_24h_load_profile_from_csv.m
+solve_es_socp_opf_case.m
+src/es/split_cl_ncl_load.m
+src/es/calculate_voltage_impact_score.m

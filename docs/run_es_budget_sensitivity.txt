@@ -1,0 +1,33 @@
+run_es_budget_sensitivity.m — ES Budget Sensitivity
+====================================================
+
+WHAT IT DOES
+------------
+Answers the key research question: "What is the smallest number
+of ES units needed to restore voltage feasibility?"
+
+Runs the optimized MISOCP for each budget value in:
+  N_ES_max = [1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 32]
+
+All other parameters fixed (alpha_ncl=0.30, u_min=0.20, rho_max=0.80).
+
+OUTPUTS
+-------
+results/tables/es_budget_sensitivity.csv
+  N_ES_max | Feasible | N_ES_used | Vmin_pu | TotalLoss | SelectedBuses
+
+results/figures/es_budget_vs_min_voltage.png
+results/figures/es_budget_vs_loss.png
+results/figures/es_budget_feasibility.png
+
+HOW TO INTERPRET
+----------------
+N_ES_max where Feasible first becomes TRUE = minimum required budget.
+Vmin plateau beyond this budget = diminishing returns.
+N_ES_used < N_ES_max = optimizer uses fewer units than allowed.
+
+PRACTICAL MEANING
+-----------------
+If N_ES_max=6 gives first feasibility, the researcher can recommend
+deploying 6 ES units at the specific buses found by the optimizer.
+This is far more practical than deploying 32 units (all buses).

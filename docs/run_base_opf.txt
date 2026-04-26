@@ -1,0 +1,46 @@
+run_base_opf.m — Base IEEE 33-Bus OPF Without ES
+=================================================
+
+WHAT IT DOES
+------------
+Establishes the base-case voltage profile of the IEEE 33-bus
+feeder without any Electric Spring or reactive support.
+
+Runs SOCP OPF (solve_es_socp_opf_case with es_buses=[]) and
+saves hourly voltage, loss, and feasibility results.
+
+PURPOSE
+-------
+- Shows whether the base loading itself violates 0.95 pu
+- Provides the reference against which ES improvements are measured
+- Confirms the solver and data pipeline work correctly
+
+INPUTS (no arguments — reads from mp_export_case33bw/)
+------
+branch.csv    IEEE 33-bus branch R, X (p.u.)
+loads_base.csv    base loads per bus (p.u.)
+
+OUTPUTS
+-------
+results/tables/base_case_results.csv
+  Hour | Price | Vmin_pu | VminBus | Loss_pu
+
+results/figures/base_voltage_profile.png
+  Bar chart of voltage at each bus at peak hour (hour 20)
+  Red dashed line shows V_min = 0.95 pu limit
+
+EXPECTED RESULT
+---------------
+The IEEE 33-bus feeder has Vmin approximately 0.91 pu at bus 18
+under standard loading (MATPOWER default). With the 24-hour
+multiplier profile peaking at 1.20 (hour 20), the minimum voltage
+is around 0.91-0.93 pu — well below the 0.95 pu limit.
+
+Therefore the base case is expected to be INFEASIBLE with hard
+Vmin=0.95. This confirms ES is necessary.
+
+HOW TO RUN
+----------
+From MATLAB command window (project root):
+  run('src/network/run_base_opf.m')
+Or via master script: main_run_es_research.m

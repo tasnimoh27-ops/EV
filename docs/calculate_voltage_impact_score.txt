@@ -1,0 +1,63 @@
+calculate_voltage_impact_score.m — Bus Ranking for ES Placement
+================================================================
+
+WHAT IT DOES
+------------
+Computes a voltage impact score (VIS) for each bus to rank
+them by how effective ES placement would be at that bus.
+
+Higher VIS = placing ES at that bus has more potential to
+raise voltage across the network.
+
+INPUTS
+------
+topo       topology struct from build_distflow_topology_from_branch_csv
+loads      loads struct from build_24h_load_profile_from_csv
+alpha_ncl  NCL fraction (used to scale NCL size estimate)
+
+OUTPUTS
+-------
+vis.score       nb x 1   raw VIS score per bus
+vis.rank        nb x 1   bus indices sorted descending by score
+vis.sum_R_path  nb x 1   total resistance from slack bus to each bus
+vis.sum_X_path  nb x 1   total reactance from slack bus to each bus
+vis.P_NCL_mean  nb x 1   mean NCL active power across 24h
+vis.Q_NCL_mean  nb x 1   mean NCL reactive power across 24h
+
+EQUATION
+--------
+VIS(j) = P_NCL(j) * sum_R_path(j)  +  Q_NCL(j) * sum_X_path(j)
+
+where:
+  sum_R_path(j)  = sum of R values along the path from bus 1 to bus j
+  sum_X_path(j)  = sum of X values along the path from bus 1 to bus j
+  P_NCL(j)       = alpha_ncl * mean_P_load(j)  [NCL contribution]
+  Q_NCL(j)       = alpha_ncl * mean_Q_load(j)
+
+PHYSICAL INTERPRETATION
+-----------------------
+The DistFlow voltage drop formula shows that bus voltage decreases
+as load increases and as line impedance increases.
+
+Reducing load at bus j by delta_P, delta_Q raises voltage at
+all downstream buses by approximately:
+  delta_V ~ delta_P * R_path + delta_Q * X_path
+
+So a bus with high NCL AND high path impedance is the most
+valuable candidate for ES placement.
+
+WHY NOT JUST USE LOW VOLTAGE RANKING
+-------------------------------------
+A bus can have low voltage because it is downstream of a heavily
+loaded bus — but ES at THAT bus may have little impact because
+the congestion is upstream. VIS captures both local flexibility
+(how much NCL the bus has) and electrical distance (how much
+reducing its load would help).
+
+HOW TO MODIFY
+-------------
+- Replace P_NCL/Q_NCL with actual time-of-peak values
+  instead of 24h mean for a peak-hour score
+- Add downstream load contribution to the score:
+  VIS(j) += sum_k_downstream P_NCL(k) * R_path_through(j)
+- Weight R and X differently if network is dominantly resistive

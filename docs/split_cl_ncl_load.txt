@@ -1,0 +1,66 @@
+split_cl_ncl_load.m — CL/NCL Load Separation Function
+=======================================================
+
+WHAT IT DOES
+------------
+Splits the load at each candidate ES bus into two parts:
+  - Critical Load (CL): always fully supplied
+  - Non-Critical Load (NCL): flexible, adjusted by ES
+
+INPUTS
+------
+loads       loads struct from build_24h_load_profile_from_csv
+            Fields used: P24 (nb x 24), Q24 (nb x 24)
+
+alpha_ncl   NCL fraction, scalar in [0,1]
+            Example: 0.30 means 30% of load is non-critical
+
+es_buses    vector of bus indices where ES is deployed (1-indexed)
+            Non-ES buses keep all load as critical
+
+ncl_pf      NCL power factor, scalar
+            1.0  = pure resistive (Q_NCL follows Q proportionally)
+            0.95 = lagging (Q_NCL = P_NCL * tan(acos(0.95)))
+            0.90, 0.85 similarly
+
+OUTPUTS
+-------
+cl_ncl     struct with:
+  .P_CL    nb x 24  active critical load
+  .Q_CL    nb x 24  reactive critical load
+  .P_NCL   nb x 24  active non-critical load (zero at non-ES buses)
+  .Q_NCL   nb x 24  reactive non-critical load (zero at non-ES buses)
+  .alpha   scalar NCL share
+  .ncl_pf  scalar power factor used
+  .es_buses row vector of ES bus indices
+
+EQUATIONS
+---------
+At each ES bus j:
+  P_NCL(j,t) = alpha_ncl * P_total(j,t)
+  P_CL(j,t)  = (1 - alpha_ncl) * P_total(j,t)
+
+If ncl_pf = 1.0 (resistive):
+  Q_NCL(j,t) = alpha_ncl * Q_total(j,t)
+  Q_CL(j,t)  = (1 - alpha_ncl) * Q_total(j,t)
+
+If ncl_pf < 1.0 (inductive):
+  tan_phi = tan(acos(ncl_pf))
+  Q_NCL(j,t) = P_NCL(j,t) * tan_phi
+  Q_CL(j,t)  = Q_total(j,t) - Q_NCL(j,t)  [clamped at 0]
+
+WHY NCL PF MATTERS
+------------------
+In physical ES systems, inductive NCL loads (motors, fluorescent
+lights with ballasts) produce reactive current. When ES adjusts
+the NCL voltage, the reactive current response differs from
+resistive loads. At OPF level, this is captured by varying
+Q_NCL independently of the load PF of the full bus.
+
+HOW TO MODIFY
+-------------
+- Change NCL fractions per bus: replace scalar alpha_ncl
+  with a vector alpha_j and index it inside the loop
+- Add mixed PF: call the function multiple times with different
+  ncl_pf values for different buses
+- Non-ES buses always have P_NCL = 0, Q_NCL = 0 regardless of alpha
