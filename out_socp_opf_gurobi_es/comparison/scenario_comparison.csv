@@ -1,0 +1,7 @@
+ScenarioID,Label,Status,MinVmin_pu,TotalLoss_pu,WeightedObj,MeanCurtailment_pct,MaxVoltageSlack_V2
+scenario_A_strict,"Scenario A — Strict Benchmark",INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+scenario_B_feasible,"Scenario B — Feasible Hard-Constrained",INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+scenario_C_soft_diag,"Scenario C — Soft-Constrained Diagnostic",Diagnostic,0.898280747168518,0.342913820429152,11315.040857871,63.4522564359585,0.0955917001462013
+scenario_D_expanded,"Scenario D — Expanded ES Set [17,18,32,33]",INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+scenario_E_full_ctrl,"Scenario E — Full Controllability (Upper Bound)",INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+scenario_F_lambda0,"Scenario F — Sensitivity: lambda\_u = 0",INFEASIBLE,NaN,NaN,NaN,NaN,NaN

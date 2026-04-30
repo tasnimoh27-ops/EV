@@ -246,8 +246,9 @@ if res.feasible
     res.worst_hour       = worstHour;
 
     % ---------------------------------------------------------------
-    %  SAVE CSVs
+    %  SAVE CSVs + FIGURES  (skipped when out_dir is empty)
     % ---------------------------------------------------------------
+  if ~isempty(params.out_dir)
     summary = table((1:T).', price, Vmin_t, VminBus_t, loss_t, costloss_t, ...
         'VariableNames', {'Hour','Price','Vmin_pu','VminBus','Loss_pu','LossCost'});
     writetable(summary, fullfile(params.out_dir, 'summary_24h.csv'));
@@ -351,6 +352,7 @@ if res.feasible
         colormap('hot');
         saveas(fh, fullfile(params.out_dir,'voltage_slack_heatmap.png')); close(fh);
     end
+  end  % ~isempty(params.out_dir)
 
     fprintf('    OK | Vmin=%.4f (h%d,bus%d) | Loss=%.5f pu | Curt=%.1f%% | MaxSV=%.2e\n', ...
         min(Vmin_t), worstHour, VminBus_t(worstHour), ...

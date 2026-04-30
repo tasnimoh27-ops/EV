@@ -1,0 +1,6 @@
+ID,Label,Status,MinVmin_pu,TotalLoss_pu,MeanCurt_pct,TotalQg_puh,MaxQ_ES_pu
+9E1_dist_hetero_2ndgen_noQg,9E-1: Dist-ES+HeteroRho+2ndGen (no Qg),INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+9E2_full_hybrid,9E-2: FULL HYBRID (All combined),INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+9E3_dist_hetero_noQ_ES_withQg,9E-3: Dist-ES+HeteroRho+Qg (no 2ndGen),INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+9E4_full_hybrid_aggressive,9E-4: FULL HYBRID  u_min=0.00,INFEASIBLE,NaN,NaN,NaN,NaN,NaN
+9E5_full_hybrid_lambda0,9E-5: FULL HYBRID  lambda_u=0,INFEASIBLE,NaN,NaN,NaN,NaN,NaN

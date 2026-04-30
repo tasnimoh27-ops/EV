@@ -1,0 +1,53 @@
+# Large binary result files
+*.mat
+
+# Root-level output artifacts (saved when out_dir was empty — bug artifacts)
+/Pd_eff_by_hour.csv
+/Qd_eff_by_hour.csv
+/V_bus_by_hour.csv
+/curtailment_ratio.csv
+/scenario_info.txt
+/summary_24h.csv
+/u_bus_by_hour.csv
+/*.png
+
+# Autosave files
+*.asv
+*.m~
+*.autosave
+*.slx.r*
+*.mdl.r*
+
+# Derived content-obscured files
+*.p
+
+# Compiled MEX files
+*.mex*
+
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
+
+# Deployable archives
+*.ctf
+
+# Generated helpsearch folders
+helpsearch*/
+
+# Code generation folders
+slprj/
+sccprj/
+codegen/
+
+# Cache files
+*.slxc
+
+# Cloud based storage dotfile
+.MATLABDriveTag
+
+# buildtool cache folder
+.buildtool/
+
+# SimBiology backup files
+*.sbproj.backup
+*.sbproj.bak

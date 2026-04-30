@@ -1,0 +1,26 @@
+==================================================
+ SCENARIO INFORMATION
+==================================================
+ Name          : scenario_C_soft_diag
+ Label         : Scenario C — Soft-Constrained Diagnostic
+--------------------------------------------------
+ ES buses      : [18 33]
+ rho_val       : 0.4000  (NCL fraction)
+ u_min_val     : 0.2000  (min NCL scaling)
+ lambda_u      : 5.0000  (curtailment penalty)
+ Vmin          : 0.9500  p.u.
+ Vmax          : 1.0500  p.u.
+ soft_voltage  : 1
+ lambda_sv     : 1000.00   (voltage-slack penalty)
+--------------------------------------------------
+ FEASIBLE      : 1
+ Solver code   : 0
+ Solver info   : Successfully solved (GUROBI)
+--------------------------------------------------
+ Min voltage   : 0.898281  p.u.
+ Worst hour    : 20
+ Total loss    : 0.342914  p.u.
+ Weighted obj  : 11315.040858
+ Mean curtail  : 0.6345  (63.45%)
+ Max V-slack   : 9.5592e-02
+==================================================

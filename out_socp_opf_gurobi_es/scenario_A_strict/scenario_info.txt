@@ -1,0 +1,18 @@
+==================================================
+ SCENARIO INFORMATION
+==================================================
+ Name          : scenario_A_strict
+ Label         : Scenario A — Strict Benchmark
+--------------------------------------------------
+ ES buses      : [18 33]
+ rho_val       : 0.4000  (NCL fraction)
+ u_min_val     : 0.2000  (min NCL scaling)
+ lambda_u      : 5.0000  (curtailment penalty)
+ Vmin          : 0.9500  p.u.
+ Vmax          : 1.0500  p.u.
+ soft_voltage  : 0
+--------------------------------------------------
+ FEASIBLE      : 0
+ Solver code   : 12
+ Solver info   : Either infeasible or unbounded (<a href="yalmip.github.io/infeasibleorunbounded">learn to debug</a>) (GUROBI)
+==================================================

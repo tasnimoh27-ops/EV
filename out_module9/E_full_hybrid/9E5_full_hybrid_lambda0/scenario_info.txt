@@ -1,0 +1,19 @@
+==================================================
+ MODULE 9 SCENARIO: 9E-5: FULL HYBRID  lambda_u=0
+==================================================
+ ES buses      : [6 9 13 18 26 30 33]
+ rho(ES buses) : [0.6 0.5 0.45 0.4 0.6 0.5 0.4]
+ u_min(ES)     : [0.2 0.2 0.2 0.2 0.2 0.2 0.2]
+ lambda_u      : 0.0000
+ Qg buses      : [6 16]
+ Qg_max(Qg)    : [0.08 0.1]
+ lambda_q      : 1.0000
+ Second-gen ES : 1
+ S_rated(ES)   : [0.1 0.08 0.06 0.05 0.12 0.08 0.05]
+ Vmin / Vmax   : 0.9500 / 1.0500 pu
+ Soft voltage  : 0
+--------------------------------------------------
+ FEASIBLE      : 0
+ Solver code   : 4
+ Solver info   : Numerical problems (<a href="yalmip.github.io/inside/debuggingnumerics">learn to debug</a>) (GUROBI)
+==================================================
