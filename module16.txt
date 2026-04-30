@@ -1,0 +1,30 @@
+MODULE 16 — Voltage Comparison Visualisation (7 Publication Figures)
+=====================================================================
+File: module16.m (plot_voltage_comparison.m)
+
+WHAT IT DOES
+------------
+Generates 7 publication-quality figures comparing bus voltages across
+the Module 9 scenarios and Module 7 (Qg baseline):
+
+  Fig 1: Bus voltage profile at peak hour h20 (all datasets)
+  Fig 2: System minimum voltage vs hour (24h trace)
+  Fig 3: Side-by-side voltage heatmaps (Module 7 vs best 9F case)
+  Fig 4: Voltage delta map (best ES minus No-ES reference)
+  Fig 5: All 5 feasible 9F ES profiles + total loss bar chart
+  Fig 6: Module 9F feasibility boundary map (placement x rho grid)
+  Fig 7: Voltage profiles at 3 key hours (h08, h17, h20)
+
+WHY RUN IT
+----------
+Produces the figures used in research paper / thesis.
+Requires Module 9F results to be already computed and saved.
+
+OUTPUT
+------
+Saves PNG + PDF versions of all 7 figures to ./results/figures/
+
+DEPENDS ON
+----------
+Precomputed results from module15.m (Module 9F feasibility scan)
+./out_module9/ folder must exist with 9F output files

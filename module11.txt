@@ -1,0 +1,30 @@
+MODULE 11 — Module 9B: Hybrid ES + Reactive (Qg) Support
+==========================================================
+File: module11.m (run_module9B_hybrid_qg.m)
+
+WHAT IT DOES
+------------
+Tests ES combined with reactive injection (Qg) at 12 scenario combinations.
+Motivation: if ES alone is insufficient, perhaps ES + Qg together feasible?
+
+Uses solve_hybrid_opf_case.m which adds Qg variables alongside ES.
+
+RESULT: ALL 12 scenarios INFEASIBLE (Gurobi code 12).
+
+WHY IT FAILS
+------------
+Adding Qg support to infeasible ES placements does not fix the root cause.
+Bus 30 reactive anomaly (Q/P=3.0) still not addressed by partial coverage.
+
+OUTPUT
+------
+Results saved to ./out_module9/9B/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_hybrid_opf_case.m
+solve_es_socp_opf_case.m

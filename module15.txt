@@ -1,0 +1,37 @@
+MODULE 15 — Module 9F: Feasibility Parametric Scan
+====================================================
+File: module15.m (run_module9F_feasibility_scan.m)
+
+WHAT IT DOES
+------------
+Systematic 70-case scan across:
+  - 5 placement sets P1-P5 (P5 = all 32 non-slack buses)
+  - 7 rho values: [0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80]
+  - 2 u_min values: [0.00, 0.20]
+
+Purpose: find the feasibility boundary — what rho/coverage is the minimum
+needed for Vmin >= 0.95 pu to be achievable?
+
+RESULT: 5 FEASIBLE cases found (all require P5 = all 32 buses):
+  rho=0.60, u_min=0.00 → Vmin=0.9500, Loss=0.1849 pu
+  rho=0.70, u_min=0.00 → Vmin=0.9500, Loss=0.1872 pu
+  rho=0.70, u_min=0.20 → Vmin=0.9500, Loss=0.1821 pu  ← best
+  rho=0.80, u_min=0.00 → Vmin=0.9500, Loss=0.1874 pu
+  rho=0.80, u_min=0.20 → Vmin=0.9500, Loss=0.1869 pu
+
+KEY FINDING
+-----------
+All-bus coverage (P5) is the UPPER BOUND of feasibility.
+Module 18 (MISOCP) finds the MINIMUM feasible subset.
+
+OUTPUT
+------
+Results saved to ./out_module9/9F/  (feasibility map CSV + figures)
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m

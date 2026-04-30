@@ -1,0 +1,38 @@
+MODULE 8 — Multi-Scenario ES Framework (Scenarios A–F)
+=======================================================
+File: module8.m (run_es_scenario_framework.m)
+
+WHAT IT DOES
+------------
+Runs 6 named ES scenarios (A through F) in batch, each with a
+different ES bus placement and parameter combination:
+
+  Scenario A: ES at buses [18, 33], rho=0.3, u_min=0.0
+  Scenario B: ES at buses [18, 33], rho=0.5, u_min=0.2
+  Scenario C: ES at all lateral-end buses (high-voltage-risk set)
+  Scenario D: ES at buses selected by voltage sensitivity ranking
+  Scenario E: Aggressive rho=0.8, wider placement
+  Scenario F: Feasibility scan across rho values (precursor to Module 15)
+
+Each scenario calls solve_es_socp_opf_case.m internally.
+Results are compared in a summary table.
+
+WHY RUN IT
+----------
+Explores the design space of ES placement before the formal
+optimization (Module 18). Provides intuition on which buses
+and rho values matter most.
+
+OUTPUT
+------
+Saves per-scenario results + comparison table to ./out_module9/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m
+build_distflow_topology_from_branch_csv.m
+build_24h_load_profile_from_csv.m

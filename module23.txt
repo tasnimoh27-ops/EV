@@ -1,0 +1,23 @@
+MODULE 23 — Voltage Profile Plots
+===================================
+File: module23.m (plot_voltage_profiles.m)
+
+WHAT IT DOES
+------------
+Generates voltage profile figures from OPF results:
+  - Per-bus voltage at each hour (heatmap, 33 buses x 24 hours)
+  - Voltage at peak hour (h20) bar chart
+  - Minimum voltage trajectory across hours
+  - Comparison: No-ES vs ES case
+
+Used to visualise results from Modules 5, 7, 17, or 18.
+Can be called standalone or by main_run_es_research.m.
+
+OUTPUT
+------
+Saves PNG figures to ./results/figures/
+
+DEPENDS ON
+----------
+Precomputed res struct (output from solve_es_socp_opf_case.m)
+Called with a results struct as input argument.

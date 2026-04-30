@@ -1,0 +1,30 @@
+MODULE 13 — Module 9D: Second-Generation ES Placement
+======================================================
+File: module13.m (run_module9D_second_gen.m)
+
+WHAT IT DOES
+------------
+Tests 6 scenarios using voltage-sensitivity-guided placement:
+selects ES buses based on DistFlow voltage sensitivity ranking
+(which buses contribute most to voltage drop).
+
+RESULT: ALL 6 scenarios show Gurobi code 4 (numerical issues).
+
+CODE 4 INTERPRETATION
+---------------------
+Code 4 (numerical problems) is DIFFERENT from code 12 (clearly infeasible).
+It means the solver is near the feasibility boundary but cannot confirm.
+This suggests voltage-guided placement is closer to feasibility than
+the random/distributed placements of 9A-9C.
+
+OUTPUT
+------
+Results saved to ./out_module9/9D/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m

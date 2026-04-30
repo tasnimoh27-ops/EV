@@ -1,0 +1,34 @@
+MODULE 12 — Module 9C: Heterogeneous NCL Fraction (rho)
+=========================================================
+File: module12.m (run_module9C_hetero_rho.m)
+
+WHAT IT DOES
+------------
+Tests 6 scenarios where each ES bus gets a DIFFERENT rho value
+(bus-specific NCL fraction) instead of one uniform rho for all.
+Rho values assigned based on bus load magnitude.
+
+RESULT: ALL 6 scenarios INFEASIBLE (Gurobi code 12).
+
+WHY IT FAILS
+------------
+Bus-specific rho without full-network coverage still cannot
+maintain Vmin >= 0.95 at buses 17-18 and 32-33.
+Heterogeneous sizing helps but coverage gap remains the binding constraint.
+
+KEY INSIGHT
+-----------
+This is the precursor to Module 18 (MISOCP) which solves the combined
+placement + sizing problem optimally with binary variables.
+
+OUTPUT
+------
+Results saved to ./out_module9/9C/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m

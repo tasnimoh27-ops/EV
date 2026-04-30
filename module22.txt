@@ -1,0 +1,37 @@
+MODULE 22 — Benchmark Comparison (Manual vs Greedy vs Optimized)
+=================================================================
+File: module22.m (run_benchmark_comparison.m)
+
+WHAT IT DOES
+------------
+Compares four ES placement strategies head-to-head:
+  1. Manual    — hand-picked buses [18, 33] (Module 7 baseline)
+  2. All-bus   — all 32 non-slack buses (Module 15 upper bound)
+  3. Greedy    — heuristic sequential selection (Module 17)
+  4. Optimized — MISOCP optimal placement (Module 18)
+
+For each strategy, runs the 24h SOCP OPF and reports:
+  - Number of ES units deployed
+  - Minimum voltage achieved (Vmin)
+  - Total 24h feeder losses
+  - Computational time
+
+WHY RUN IT
+----------
+Quantifies the value of optimization (Module 18) over simpler methods.
+Shows how close the greedy heuristic is to the true optimum.
+Final summary table for the research paper.
+
+OUTPUT
+------
+Saves benchmark_comparison.csv and bar charts to ./results/benchmark/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m
+run_greedy_es_placement.m (module17.m)
+run_optimized_es_placement.m (module18.m)

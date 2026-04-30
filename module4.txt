@@ -1,0 +1,34 @@
+MODULE 4 — 24-Hour SOCP OPF with Reactive Support (Qg)
+========================================================
+File: module4.m (optimization.m)
+
+WHAT IT DOES
+------------
+Runs a 24-hour SOCP (Second-Order Cone Program) OPF on the IEEE 33-bus
+network WITH reactive power injection (Qg) at selected buses.
+
+Objective: minimize total feeder losses weighted by time-of-use price
+  min  sum_t [ price(t) * Loss(t) + lambda * sum_j |Qg(j,t)| ]
+
+The Qg variables represent reactive support (e.g., capacitor banks,
+inverters) — NOT Electric Spring. This is the intermediate step
+between pure DistFlow and the ES model.
+
+WHY RUN IT
+----------
+Baseline with conventional reactive support. Compare against Module 7
+(ES-based OPF) to quantify the incremental benefit of ES over Qg.
+
+OUTPUT
+------
+Saves voltage profiles and loss data to ./out_socp_opf_gurobi/.
+
+REQUIRES
+--------
+YALMIP toolbox + Gurobi solver
+
+DEPENDS ON
+----------
+build_distflow_topology_from_branch_csv.m
+build_24h_load_profile_from_csv.m
+mp_export_case33bw/

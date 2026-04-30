@@ -1,0 +1,32 @@
+MODULE 10 — Module 9A: Distributed ES Placement
+=================================================
+File: module10.m (run_module9A_distributed.m)
+
+WHAT IT DOES
+------------
+Tests ES at 7 placement scenarios with uniformly distributed bus sets:
+  P1: buses [6, 12, 18, 25, 33]         (5 buses)
+  P2: buses [3,6,9,12,15,18,22,25,28,33] (10 buses)
+  ... and 5 more distributed patterns
+
+Each uses rho=0.40, u_min=0.20 (same as Module 7 baseline).
+
+RESULT: ALL 7 scenarios INFEASIBLE (Gurobi code 12).
+
+WHY IT FAILS
+------------
+Distributed placement misses critical reactive-loss buses.
+Bus 30 has anomalous Q/P ratio (3.0) that needs local ES support.
+Uniform coverage does not target voltage-sensitive buses.
+
+OUTPUT
+------
+Results saved to ./out_module9/9A/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m

@@ -1,0 +1,27 @@
+MODULE 24 — Feasibility Heatmap Plot
+======================================
+File: module24.m (plot_feasibility_heatmap.m)
+
+WHAT IT DOES
+------------
+Generates a 2D heatmap showing feasibility across the parameter space:
+  - X-axis: rho values (NCL fraction)
+  - Y-axis: placement set (P1-P5 or bus budget N)
+  - Cell colour: GREEN = feasible, RED = infeasible
+
+Also overlays Vmin values and loss contours on the feasible region.
+
+WHY RUN IT
+----------
+Produces the feasibility boundary figure (Fig 6 from Module 16).
+Used independently when re-running sensitivity analysis without
+regenerating all Module 16 figures.
+
+OUTPUT
+------
+Saves feasibility_heatmap.png and .pdf to ./results/figures/
+
+DEPENDS ON
+----------
+Precomputed 9F scan results from module15.m
+./out_module9/9F/ must contain the parametric scan CSV output

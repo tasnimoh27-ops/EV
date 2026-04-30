@@ -1,0 +1,119 @@
+run_optimized_es_placement.m — Optimized MISOCP ES Placement
+=============================================================
+
+WHAT IT DOES
+------------
+This is the MAIN NOVEL MODULE of the research.
+
+Jointly optimizes ES placement (where to install), ES sizing
+(how large), and NCL control (how much to adjust NCL) to
+restore voltage feasibility with minimum deployment.
+
+Unlike Module 9F which tried every combination exhaustively,
+this module uses a single MISOCP (Mixed Integer SOCP) that
+simultaneously decides all variables in one optimization.
+
+DECISION VARIABLES
+------------------
+z(j)      binary {0,1}  — 1 if ES installed at bus j, 0 otherwise
+rho(j)    continuous     — ES capacity factor at bus j
+u(j,t)    continuous     — NCL service factor (how much NCL remains)
+v(j,t)    continuous     — squared voltage magnitude
+P(k,t)    continuous     — branch active power flow
+Q(k,t)    continuous     — branch reactive power flow
+l(k,t)    continuous     — squared branch current magnitude
+
+OBJECTIVE FUNCTION
+------------------
+Minimize weighted sum:
+  c_loss * sum_t sum_k R(k) * l(k,t) * price(t)   [loss cost]
++ c_es   * sum_j z(j)                               [ES count penalty]
++ c_rho  * sum_j rho(j) * S_NCL(j)                 [sizing cost]
++ c_curt * sum_j,t (1-u(j,t)) * P_NCL(j,t)         [NCL curtailment]
+
+Weights (configurable in cfg struct):
+  c_loss = 1.0   (base reference)
+  c_es   = 0.10  (penalty per ES unit installed)
+  c_rho  = 0.05  (penalty per unit of ES capacity)
+  c_curt = 0.50  (penalty per unit of NCL curtailed)
+
+Increase c_es to get fewer ES units (may become infeasible).
+Increase c_curt to protect NCL (ES operates less aggressively).
+
+CONSTRAINTS
+-----------
+DistFlow power balance:
+  P(k,t) = P_load(j,t) + sum_children P(m,t) + R(k)*l(k,t)
+  Q(k,t) = Q_load(j,t) + sum_children Q(m,t) + X(k)*l(k,t)
+
+Voltage drop:
+  v(j,t) = v(parent,t) - 2*[R*P + X*Q](k,t) + (R^2+X^2)*l(k,t)
+
+SOCP relaxation:
+  Pij^2 + Qij^2 <= l * v_parent
+  [Lorentz form]
+
+Voltage limits:
+  Vmin^2 <= v(j,t) <= Vmax^2  (hard, 0.95 <= V <= 1.05)
+  v(root) = 1.0
+
+ES linking constraint:
+  u(j,t) >= 1 - z(j)*(1 - u_min)
+  u(j,t) <= 1
+  → If z(j)=0: u(j,t) >= 1 AND u(j,t) <= 1 => u = 1 (no ES effect)
+  → If z(j)=1: u(j,t) >= u_min (ES can reduce NCL to u_min fraction)
+
+ES capacity constraint:
+  1 - u(j,t) <= rho(j)
+  → ES capacity rho(j) must cover the actual curtailment (1-u)
+
+ES sizing bounds:
+  0 <= rho(j) <= rho_max * z(j)
+  → No capacity if not installed; capped at rho_max if installed
+
+Budget constraint:
+  sum_j z(j) <= N_ES_max
+
+WHY THIS MATTERS
+----------------
+Previous approaches (Module 9F) tried fixed manual placements
+(P1-P5) and found only all-bus ES (P5) works. This module asks:
+"What is the minimum ES deployment to restore feasibility?"
+
+The binary z(j) allows the optimizer to select which buses
+actually need ES. The result is a practical, cost-effective
+deployment instead of installing ES everywhere.
+
+BUDGET SWEEP
+------------
+The module runs for N_ES_max = [2, 4, 6, 8, 10, 15, 32].
+This shows at what budget feasibility is first achieved and
+how much Vmin improves with additional ES units.
+
+HOW TO MODIFY
+-------------
+- Change cfg.load_multiplier to study more stressed loading
+- Change cfg.alpha_ncl to vary NCL flexibility
+- Change cfg.u_min to allow more or less NCL reduction
+- Change cfg.rho_max to limit maximum ES size
+- Adjust c_es, c_rho, c_curt weights for different priorities
+- Change cfg.N_ES_max_list for different budget scenarios
+
+SOLVER
+------
+Requires Gurobi (MISOCP capable).
+YALMIP translates the model automatically.
+MIPGap = 1% provides near-optimal solutions faster.
+TimeLimit = 300s prevents indefinite runtime.
+
+OUTPUTS
+-------
+results/tables/optimized_es_results.csv
+  — one row per budget: feasibility, Vmin, loss, selected buses
+
+results/figures/optimized_vmin_vs_budget.png
+results/figures/optimized_es_locations.png
+results/figures/optimized_es_voltage_profile.png
+
+results/mat_files/optimized_es_results.mat
+  — full solution structs for post-processing

@@ -1,0 +1,39 @@
+MODULE 7 — ES SOCP OPF at Fixed Buses (Basic ES Test)
+=======================================================
+File: module7.m (run_socp_opf_24h_yalmip_gurobi_es.m)
+
+WHAT IT DOES
+------------
+Runs the 24-hour SOCP OPF with Electric Spring (ES) placed at
+buses [18, 33] — the two most voltage-stressed terminal buses.
+
+ES parameters (fixed):
+  rho     = 0.40  (40% of load is NCL, controllable)
+  u_min   = 0.20  (NCL can be reduced to 20% of its base value)
+  lambda_u = penalty on curtailment in objective
+
+This is the simplest ES test — fixed placement, fixed capacity,
+single scenario.
+
+WHY RUN IT
+----------
+Verifies the ES OPF solver works before running the multi-scenario
+framework (Module 8) or the optimized placement (Module 18).
+Good usage example for solve_es_socp_opf_case.m.
+
+OUTPUT
+------
+Saves results to ./out_socp_opf_gurobi_es/
+  - Voltage profiles per bus per hour
+  - NCL control (u values) per ES bus per hour
+  - Loss and cost summary
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_es_socp_opf_case.m
+build_distflow_topology_from_branch_csv.m
+build_24h_load_profile_from_csv.m

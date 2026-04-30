@@ -1,0 +1,124 @@
+EV RESEARCH — MODULE REFERENCE TABLE
+=====================================
+Project: Stress-Adaptive ES Placement in IEEE 33-Bus Network
+Folder:  EV_clean/
+Date:    2026-04-27
+
+================================================================================
+NUMBERED MODULES  (module#.m + matching module#.txt)
+================================================================================
+
+#   | File (module#.m)                      | Original Name                        | Branch          | Description
+----|---------------------------------------|--------------------------------------|-----------------|------------------------------------
+1   | module1.m                             | topology_construction_verification.m | main            | Verify 33-bus radial topology
+2   | module2.m                             | distflow_solver_analysis.m           | main            | DistFlow baseline + stress analysis
+3   | module3.m                             | Plot_the_graph_from_load_profile.m   | main            | Plot 24h load profile
+4   | module4.m                             | optimization.m                       | main            | 24h SOCP OPF with Qg reactive support
+5   | module5.m                             | run_base_opf.m                       | feature branch  | Base SOCP OPF without ES (new framework)
+6   | module6.m                             | run_stress_scan.m                    | feature branch  | Load multiplier stress sweep [1.0–1.8]
+7   | module7.m                             | run_socp_opf_24h_yalmip_gurobi_es.m  | main            | ES OPF at fixed buses [18,33]
+8   | module8.m                             | run_es_scenario_framework.m          | research branch | Multi-scenario ES batch runner (A–F)
+9   | module9.m                             | run_module9_master.m                 | research branch | Module 9 master runner (all variants)
+10  | module10.m                            | run_module9A_distributed.m           | research branch | 9A: Distributed ES placement (all infeasible)
+11  | module11.m                            | run_module9B_hybrid_qg.m             | research branch | 9B: Hybrid ES + Qg (all infeasible)
+12  | module12.m                            | run_module9C_hetero_rho.m            | research branch | 9C: Heterogeneous rho per bus (all infeasible)
+13  | module13.m                            | run_module9D_second_gen.m            | research branch | 9D: Voltage-sensitivity guided (near boundary)
+14  | module14.m                            | run_module9E_full_hybrid.m           | research branch | 9E: Full hybrid combined (near boundary)
+15  | module15.m                            | run_module9F_feasibility_scan.m      | research branch | 9F: Parametric scan — 5 feasible cases found
+16  | module16.m                            | plot_voltage_comparison.m            | research branch | 7 publication figures: voltage comparison
+17  | module17.m                            | run_greedy_es_placement.m            | feature branch  | Greedy heuristic ES placement
+18  | module18.m                            | run_optimized_es_placement.m         | feature branch  | MISOCP optimal ES placement ← MAIN RESULT
+19  | module19.m                            | run_es_budget_sensitivity.m          | feature branch  | Sensitivity: ES budget (N_ES_max 1..32)
+20  | module20.m                            | run_ncl_share_sensitivity.m          | feature branch  | Sensitivity: NCL share (rho 20%–50%)
+21  | module21.m                            | run_ncl_pf_sensitivity.m             | feature branch  | Sensitivity: NCL power factor (1.0–0.85)
+22  | module22.m                            | run_benchmark_comparison.m           | feature branch  | Benchmark: manual vs greedy vs optimized
+23  | module23.m                            | plot_voltage_profiles.m              | feature branch  | Voltage profile heatmap + charts
+24  | module24.m                            | plot_feasibility_heatmap.m           | feature branch  | Feasibility boundary heatmap (rho vs placement)
+
+================================================================================
+HELPER FILES  (not numbered — called by name inside module scripts)
+================================================================================
+
+File                                      | Role
+------------------------------------------|--------------------------------------------------
+build_distflow_topology_from_branch_csv.m | Reads branch.csv, builds BFS radial tree struct
+build_24h_load_profile_from_csv.m         | Reads loads_base.csv, returns 24h P/Q matrices
+run_distflow_bfs.m                        | DistFlow BFS solver function (iterative)
+solve_es_socp_opf_case.m                  | Core SOCP OPF solver (YALMIP + Gurobi)
+solve_hybrid_opf_case.m                   | Hybrid ES + Qg SOCP solver (used by 9B/9E)
+split_cl_ncl_load.m                       | Splits load into CL + NCL fractions
+calculate_voltage_impact_score.m          | Ranks buses by voltage impact score (VIS)
+define_es_placement_cases.m               | Defines ES placement sets (P1–P5 + custom)
+main_run_es_research.m                    | Master pipeline — runs all modules via flags
+
+================================================================================
+DATA FOLDER
+================================================================================
+
+mp_export_case33bw/
+  branch.csv      — IEEE 33-bus branch R, X values (per unit)
+  loads_base.csv  — base active/reactive loads per bus (per unit)
+
+================================================================================
+RECOMMENDED RUN ORDER
+================================================================================
+
+First time setup / verification:
+  1. module1.m  → check topology
+  2. module2.m  → baseline DistFlow (no solver needed)
+  3. module3.m  → plot load profile
+
+Core OPF progression:
+  4. module4.m  → Qg OPF (needs Gurobi)
+  5. module5.m  → base OPF no ES
+  6. module6.m  → stress sweep
+
+ES experiments:
+  7. module7.m  → simple ES test
+  8. module8.m  → scenario A–F batch
+  9. module9.m  → all Module 9 variants (runs 10–15)
+
+Analysis and optimisation (main contribution):
+  10. module17.m → greedy placement
+  11. module18.m → MISOCP optimal ← key result
+  12. module19.m–module21.m → sensitivity studies
+  13. module22.m → benchmark comparison
+
+Visualisation (run after corresponding compute modules):
+  14. module16.m → voltage comparison figures (after module9)
+  15. module23.m → voltage profiles
+  16. module24.m → feasibility heatmap (after module15)
+
+Or run everything at once:
+  main_run_es_research.m  (set module flags at top of file)
+
+================================================================================
+SOLVER REQUIREMENTS
+================================================================================
+
+Modules 1–3 : MATLAB only (no toolbox needed)
+Modules 4–24: YALMIP toolbox + Gurobi solver
+
+Gurobi solver codes (reference):
+  Code 0  = Optimal solution found
+  Code 4  = Numerical issues (near-feasibility boundary)
+  Code 12 = Infeasible or unbounded
+
+================================================================================
+KEY FINDINGS SUMMARY
+================================================================================
+
+- IEEE 33-bus feeder violates Vmin=0.95 pu at buses 17–18 and 32–33 under
+  standard peak loading (Module 4/5).
+
+- ES at partial bus coverage (P1–P4, up to 11 buses) is ALWAYS infeasible
+  regardless of rho or u_min (Modules 10–14).
+
+- Full-network ES (P5, all 32 buses) with rho≥0.60 restores feasibility
+  and reduces feeder losses 18–20% vs Qg baseline (Module 15).
+
+- MISOCP (Module 18) finds the minimum feasible ES subset — significantly
+  fewer buses than P5, with interpretable placement rationale.
+
+- Greedy heuristic (Module 17) approximates the MISOCP result with lower
+  computational cost (Module 22 benchmark).

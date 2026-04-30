@@ -1,0 +1,34 @@
+MODULE 14 — Module 9E: Full Hybrid (ES + Qg + Sensitivity Placement)
+======================================================================
+File: module14.m (run_module9E_full_hybrid.m)
+
+WHAT IT DOES
+------------
+Combines everything tested so far:
+  - Voltage-sensitivity-guided bus selection (from 9D)
+  - Heterogeneous rho values (from 9C)
+  - Hybrid ES + Qg reactive support (from 9B)
+5 scenarios tested.
+
+RESULT: ALL 5 scenarios show Gurobi code 4 (numerical near-boundary).
+
+WHY STILL INFEASIBLE
+--------------------
+Even with all enhancements combined, partial bus coverage is insufficient.
+The constraint is the NUMBER of buses covered, not the quality of placement.
+Only full-network (all-bus) coverage can restore Vmin >= 0.95 pu.
+
+This finding directly motivates the MISOCP approach in Module 18.
+
+OUTPUT
+------
+Results saved to ./out_module9/9E/
+
+REQUIRES
+--------
+YALMIP + Gurobi
+
+DEPENDS ON
+----------
+solve_hybrid_opf_case.m
+solve_es_socp_opf_case.m
