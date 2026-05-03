@@ -21,11 +21,10 @@ root = topo.root;
 non_slack = setdiff(1:nb, root);
 
 % --- Criterion 1: Weakest voltage (run DistFlow at peak hour) ---
-V_init = ones(nb,1);
 peak_t = vsi.peak_hour;
 try
-    [V_peak,~,~,~] = run_distflow_bfs(topo, loads.P24(:,peak_t), ...
-                                       loads.Q24(:,peak_t), V_init);
+    r_pk   = run_distflow_bfs(loads.P24(:,peak_t), loads.Q24(:,peak_t), topo, 1.0);
+    V_peak = r_pk.V;
 catch
     V_peak = ones(nb,1);
 end

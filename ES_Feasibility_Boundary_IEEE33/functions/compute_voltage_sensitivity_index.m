@@ -22,12 +22,11 @@ nb   = topo.nb;
 root = topo.root;
 
 % Find peak hour from baseline
-V_init = ones(nb,1);
 Vmin_t = zeros(24,1);
 for t = 1:24
     try
-        [V_t,~,~,~] = run_distflow_bfs(topo, loads.P24(:,t), loads.Q24(:,t), V_init);
-        Vmin_t(t) = min(V_t);
+        r_t = run_distflow_bfs(loads.P24(:,t), loads.Q24(:,t), topo, 1.0);
+        Vmin_t(t) = r_t.Vmin;
     catch
         Vmin_t(t) = NaN;
     end
@@ -38,8 +37,8 @@ Pd_peak = loads.P24(:, peak_t);
 Qd_peak = loads.Q24(:, peak_t);
 
 % Baseline Vmin at peak hour
-[V_base, ~, ~, ~] = run_distflow_bfs(topo, Pd_peak, Qd_peak, V_init);
-Vmin_base_peak = min(V_base);
+r_base_pk    = run_distflow_bfs(Pd_peak, Qd_peak, topo, 1.0);
+Vmin_base_peak = r_base_pk.Vmin;
 
 % Per-bus sensitivity
 delta_Vmin   = zeros(nb, 1);
@@ -62,8 +61,8 @@ for i = 1:nb
     Qd_pert(i) = Qd_pert(i) - dQ;
 
     try
-        [V_pert,~,~,~] = run_distflow_bfs(topo, Pd_pert, Qd_pert, V_init);
-        Vmin_pert = min(V_pert);
+        r_pert    = run_distflow_bfs(Pd_pert, Qd_pert, topo, 1.0);
+        Vmin_pert = r_pert.Vmin;
     catch
         Vmin_pert = Vmin_base_peak;
     end

@@ -26,21 +26,19 @@ for t = 1:T
     Pd = loads.P24(:, t);
     Qd = loads.Q24(:, t);
 
-    % Flat start: V = 1 pu
-    V_init = ones(nb, 1);
-
-    % Call existing DistFlow BFS solver
+    % Call existing DistFlow BFS solver — signature: run_distflow_bfs(Pd, Qd, topo, Vslack)
     try
-        [V_t, Pij_t, Qij_t, ell_t] = run_distflow_bfs(topo, Pd, Qd, V_init);
+        r = run_distflow_bfs(Pd, Qd, topo, 1.0);
     catch ME
         fprintf('  DistFlow failed at t=%d: %s\n', t, ME.message);
         continue
     end
 
-    V_all(:, t)   = V_t;
-    loss_t(t)     = sum(topo.R .* ell_t);
-    [Vmin_t(t), VminBus_t(t)] = min(V_t);
-    n_viol_t(t)   = sum(V_t < Vmin | V_t > Vmax) - 1;  % exclude slack
+    V_all(:, t)   = r.V;
+    loss_t(t)     = r.PlossTot;
+    Vmin_t(t)     = r.Vmin;
+    VminBus_t(t)  = r.VminBus;
+    n_viol_t(t)   = sum(r.V < Vmin | r.V > Vmax) - 1;  % exclude slack
 end
 
 % Aggregate stats
