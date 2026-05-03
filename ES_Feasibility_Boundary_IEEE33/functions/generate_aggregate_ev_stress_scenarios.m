@@ -32,16 +32,16 @@ loads_cell = cell(n_scen, 1);
 caseDir   = fullfile(repo_root, 'mp_export_case33bw');
 branchCsv = fullfile(caseDir,'branch.csv');
 loadsCsv  = fullfile(caseDir,'loads_base.csv');
-loads_base = build_24h_load_profile_from_csv(loadsCsv,'flat',false,false);
+% Load with 'system' mode — use Pbase (flat) to apply custom EV profile
+loads_base = build_24h_load_profile_from_csv(loadsCsv,'system',true,false);
 
 for is = 1:n_det
     mult_ev = det_mults(is);
     prof    = load_profile_24h(mult_ev);
-    nb      = size(loads_base.P24, 1);
     ld = loads_base;
     for t = 1:24
-        ld.P24(:,t) = loads_base.P24(:,t) * prof.mult(t);
-        ld.Q24(:,t) = loads_base.Q24(:,t) * prof.mult(t);
+        ld.P24(:,t) = loads_base.Pbase * prof.mult(t);
+        ld.Q24(:,t) = loads_base.Qbase * prof.mult(t);
     end
     ld.ev_multiplier = mult_ev;
     loads_cell{is}   = ld;
@@ -61,8 +61,8 @@ if n_stoch > 0
         prof    = load_profile_24h(mult_ev);
         ld = loads_base;
         for t = 1:24
-            ld.P24(:,t) = loads_base.P24(:,t)*prof.mult(t);
-            ld.Q24(:,t) = loads_base.Q24(:,t)*prof.mult(t);
+            ld.P24(:,t) = loads_base.Pbase * prof.mult(t);
+            ld.Q24(:,t) = loads_base.Qbase * prof.mult(t);
         end
         ld.ev_multiplier = mult_ev;
         loads_cell{idx}  = ld;

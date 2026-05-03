@@ -11,12 +11,12 @@ function loads_out = build_load_profile_24h(loads_base, ev_multiplier)
 if nargin < 2, ev_multiplier = 1.80; end
 
 prof = load_profile_24h(ev_multiplier);
-nb   = size(loads_base.P24, 1);
 
 loads_out = loads_base;
+% Use Pbase (flat, un-multiplied) so caller controls full profile
 for t = 1:24
-    loads_out.P24(:,t) = loads_base.P24(:,t) * prof.mult(t);
-    loads_out.Q24(:,t) = loads_base.Q24(:,t) * prof.mult(t);
+    loads_out.P24(:,t) = loads_base.Pbase * prof.mult(t);
+    loads_out.Q24(:,t) = loads_base.Qbase * prof.mult(t);
 end
 loads_out.ev_multiplier = ev_multiplier;
 loads_out.profile_mult  = prof.mult;

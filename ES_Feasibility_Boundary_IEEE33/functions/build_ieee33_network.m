@@ -23,19 +23,19 @@ assert(exist(loadsCsv,'file')==2, ...
     'Missing loads_base.csv at: %s', loadsCsv);
 
 topo  = build_distflow_topology_from_branch_csv(branchCsv, 1);
-loads = build_24h_load_profile_from_csv(loadsCsv, 'system', true, false);
 
-% Apply EV stress: scale evening hours 17-21 by ev_multiplier
-% Base profile already has default multipliers from the CSV loader.
-% Re-apply custom evening multiplier relative to the loaded base.
+% Load once with 'system' mode — gives both Pbase (flat) and P24 (pre-scaled).
+% Use Pbase directly so we control the full 24h profile ourselves.
+loads_raw = build_24h_load_profile_from_csv(loadsCsv, 'system', true, false);
+
 prof = load_profile_24h(ev_multiplier);
 nb   = topo.nb;
 
-% Reload clean base and apply custom profile
-loads_base = build_24h_load_profile_from_csv(loadsCsv, 'flat', false, false);
+% Build P24/Q24 from flat base × custom EV-stress profile
+loads        = loads_raw;              % copy struct (bus, unit, mode fields)
 for t = 1:24
-    loads.P24(:,t) = loads_base.P24(:,t) * prof.mult(t);
-    loads.Q24(:,t) = loads_base.Q24(:,t) * prof.mult(t);
+    loads.P24(:,t) = loads_raw.Pbase * prof.mult(t);
+    loads.Q24(:,t) = loads_raw.Qbase * prof.mult(t);
 end
 
 loads.ev_multiplier = ev_multiplier;
