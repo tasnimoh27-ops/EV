@@ -69,8 +69,6 @@ for b = params.es_buses(:)'
     rho(b) = params.rho_val;
 end
 
-fprintf('  [DBG] nb=%d T=%d size(Pd)=[%d %d] size(Qd)=[%d %d]\n', ...
-    nb, T, size(Pd,1), size(Pd,2), size(Qd,1), size(Qd,2));
 % Build nb×T load decomposition matrices via safe per-column indexing
 Pd_fixed = zeros(nb, T);
 Qd_fixed = zeros(nb, T);

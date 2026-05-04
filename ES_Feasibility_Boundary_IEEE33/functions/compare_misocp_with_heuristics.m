@@ -49,10 +49,12 @@ for itc = 1:size(test_cases,1)
         rows{end+1} = add_row(heuristics{ih}, buses_h, numel(buses_h), rho, u_min, r_h);
     end
 
-    % P1 and P2 for reference
-    for pp = {[18,33],'P1'; [9,18,26,33],'P2'}
-        buses_p = pp{1};
-        pname   = pp{2};
+    % P1 and P2 for reference — use indexed loop, NOT for-over-cell-matrix
+    ref_buses = {[18,33],       'P1'; ...
+                 [9,18,26,33],  'P2'};
+    for ip = 1:size(ref_buses, 1)
+        buses_p = ref_buses{ip, 1};
+        pname   = ref_buses{ip, 2};
         label   = sprintf('%s_r%.0f_u%.0f', pname, rho*100, u_min*100);
         r_p = solve_es_fixed_placement(topo, loads, buses_p, rho, u_min, ops, label);
         rows{end+1} = add_row(pname, buses_p, numel(buses_p), rho, u_min, r_p);
