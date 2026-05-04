@@ -203,8 +203,9 @@ end
 %  SOLVE
 % -------------------------------------------------------------------------
 ops = sdpsettings('solver','gurobi','verbose',verb);
-ops.gurobi.TimeLimit = t_lim;
-ops.gurobi.MIPGap    = mip_gap;
+ops.gurobi.TimeLimit      = t_lim;
+ops.gurobi.MIPGap         = mip_gap;
+ops.gurobi.DualReductions = 0;   % prevent GRB_INF_OR_UNBD (code 12)
 
 t_solve = tic;
 sol = optimize(Con, Obj, ops);

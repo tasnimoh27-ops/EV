@@ -69,10 +69,11 @@ for b = params.es_buses(:)'
     rho(b) = params.rho_val;
 end
 
-Pd_fixed = (1 - rho) .* Pd;    % nb x T
-Qd_fixed = (1 - rho) .* Qd;
-Pncl0    =       rho  .* Pd;
-Qncl0    =       rho  .* Qd;
+rho_mat  = repmat(rho, 1, T);   % nb x T — explicit expand avoids broadcast edge cases
+Pd_fixed = (1 - rho_mat) .* Pd;
+Qd_fixed = (1 - rho_mat) .* Qd;
+Pncl0    =       rho_mat  .* Pd;
+Qncl0    =       rho_mat  .* Qd;
 
 % u bounds: ES buses get [u_min, 1];  non-ES buses are clamped to 1
 u_lo = ones(nb, 1);
@@ -197,7 +198,7 @@ Obj = lossCost + curtCost + svCost;
 fprintf('  Solving %s ...\n', params.label);
 sol = optimize(Con, Obj, ops);
 
-if ~exist(params.out_dir, 'dir'), mkdir(params.out_dir); end
+if ~isempty(params.out_dir) && ~exist(params.out_dir, 'dir'), mkdir(params.out_dir); end
 
 % =========================================================================
 %  BUILD RESULT STRUCT
@@ -378,8 +379,10 @@ else
     fprintf('    INFEASIBLE | Code=%d | %s\n', sol.problem, sol.info);
 end
 
-% Always save a plain-text scenario info file
-write_scenario_info(params, res);
+% Save scenario info file (only when out_dir is set)
+if ~isempty(params.out_dir)
+    write_scenario_info(params, res);
+end
 
 end   % end main function
 
