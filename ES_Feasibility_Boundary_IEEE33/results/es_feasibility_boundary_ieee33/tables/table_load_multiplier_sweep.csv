@@ -1,0 +1,2 @@
+Multiplier_1,Multiplier_2,Multiplier_3,Multiplier_4,Multiplier_5,Vmin_pu_1,Vmin_pu_2,Vmin_pu_3,Vmin_pu_4,Vmin_pu_5,WorstBus_1,WorstBus_2,WorstBus_3,WorstBus_4,WorstBus_5,TotalLoss_pu_1,TotalLoss_pu_2,TotalLoss_pu_3,TotalLoss_pu_4,TotalLoss_pu_5,N_Viol_Peak_1,N_Viol_Peak_2,N_Viol_Peak_3,N_Viol_Peak_4,N_Viol_Peak_5
+1,0.913090479789781,18,0.393750790266847,21,1.2,0.893842225757845,18,0.443139280348784,21,1.4,0.873794692186301,18,0.504739636862459,21,1.6,0.852837590323292,18,0.580093043510191,23,1.8,0.830832555666025,18,0.67111995679414,24

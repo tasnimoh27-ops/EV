@@ -31,7 +31,7 @@ for itc = 1:size(test_cases,1)
     N_opt  = r_miso.n_es;
     if isnan(N_opt), N_opt = 32; end
 
-    add_row(rows, 'MISOCP', r_miso.es_buses, N_opt, rho, u_min, r_miso);
+    rows{end+1} = add_row('MISOCP', r_miso.es_buses, N_opt, rho, u_min, r_miso);
 
     % 2-6. Heuristics at N_opt buses
     heuristics = {'weakest_bus','end_feeder','VSI','combined','P5'};
@@ -46,7 +46,7 @@ for itc = 1:size(test_cases,1)
         end
         label = sprintf('%s_r%.0f_u%.0f', heuristics{ih}, rho*100, u_min*100);
         r_h = solve_es_fixed_placement(topo, loads, buses_h, rho, u_min, ops, label);
-        add_row(rows, heuristics{ih}, buses_h, numel(buses_h), rho, u_min, r_h);
+        rows{end+1} = add_row(heuristics{ih}, buses_h, numel(buses_h), rho, u_min, r_h);
     end
 
     % P1 and P2 for reference
@@ -55,11 +55,11 @@ for itc = 1:size(test_cases,1)
         pname   = pp{2};
         label   = sprintf('%s_r%.0f_u%.0f', pname, rho*100, u_min*100);
         r_p = solve_es_fixed_placement(topo, loads, buses_p, rho, u_min, ops, label);
-        add_row(rows, pname, buses_p, numel(buses_p), rho, u_min, r_p);
+        rows{end+1} = add_row(pname, buses_p, numel(buses_p), rho, u_min, r_p);
     end
 end
 
-results = cell2table(rows, 'VariableNames', ...
+results = cell2table(vertcat(rows{:}), 'VariableNames', ...
     {'Method','Buses','N_ES','rho','u_min','Feasible', ...
      'Vmin_pu','WorstBus','TotalLoss_pu','MeanCurt','MaxCurt','SolCode'});
 
@@ -70,7 +70,7 @@ if nargin >= 4 && ~isempty(out_dir)
 end
 end
 
-function add_row(rows, method, buses, N, rho, u_min, r)
+function row = add_row(method, buses, N, rho, u_min, r)
 if r.feasible
     if isfield(r,'Vmin_24h'), Vm=r.Vmin_24h; else, Vm=min(r.Vmin_t); end
     if isfield(r,'worst_bus'), wb=r.worst_bus;
@@ -82,6 +82,6 @@ if r.feasible
 else
     Vm=NaN; wb=NaN; Lo=NaN; Mc=NaN; Xc=NaN;
 end
-rows{end+1} = {method, mat2str(buses(:)'), N, rho, u_min, ...
+row = {method, mat2str(buses(:)'), N, rho, u_min, ...
     double(r.feasible), Vm, wb, Lo, Mc, Xc, r.sol_code};
 end

@@ -150,7 +150,7 @@ if run_A4_stress_sweep
         sweep_rows{end+1} = {m, r_m.Vmin_24h, r_m.worst_bus, ...
             r_m.total_loss, r_m.n_viol_peak};
     end
-    T_sweep = cell2table(sweep_rows,'VariableNames', ...
+    T_sweep = cell2table(vertcat(sweep_rows{:}),'VariableNames', ...
         {'Multiplier','Vmin_pu','WorstBus','TotalLoss_pu','N_Viol_Peak'});
     writetable(T_sweep, fullfile(out_tabs,'table_load_multiplier_sweep.csv'));
     plot_load_multiplier_sweep(T_sweep, fullfile(out_figs,'fig_load_multiplier_sweep.png'));
@@ -210,7 +210,7 @@ if run_B2_weak_bus
             end
         end
     end
-    T_wb=cell2table(wb_rows,'VariableNames',{'PlacementName','Buses','N_ES','rho','u_min',...
+    T_wb=cell2table(vertcat(wb_rows{:}),'VariableNames',{'PlacementName','Buses','N_ES','rho','u_min',...
         'Feasible','Vmin_pu','WorstBus','TotalLoss_pu','MeanCurt','SolCode'});
     writetable(T_wb,fullfile(out_tabs,'table_weak_bus_es_results.csv'));
     fprintf('  Weak-bus results saved.\n');
