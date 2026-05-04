@@ -69,11 +69,21 @@ for b = params.es_buses(:)'
     rho(b) = params.rho_val;
 end
 
-rho_mat  = repmat(rho, 1, T);   % nb x T — explicit expand avoids broadcast edge cases
-Pd_fixed = (1 - rho_mat) .* Pd;
-Qd_fixed = (1 - rho_mat) .* Qd;
-Pncl0    =       rho_mat  .* Pd;
-Qncl0    =       rho_mat  .* Qd;
+fprintf('  [DBG] nb=%d T=%d size(Pd)=[%d %d] size(Qd)=[%d %d]\n', ...
+    nb, T, size(Pd,1), size(Pd,2), size(Qd,1), size(Qd,2));
+% Build nb×T load decomposition matrices via safe per-column indexing
+Pd_fixed = zeros(nb, T);
+Qd_fixed = zeros(nb, T);
+Pncl0    = zeros(nb, T);
+Qncl0    = zeros(nb, T);
+for t = 1:T
+    pd_col = Pd(:, t);
+    qd_col = Qd(:, t);
+    Pd_fixed(:, t) = pd_col - rho .* pd_col;
+    Qd_fixed(:, t) = qd_col - rho .* qd_col;
+    Pncl0(:, t)    = rho .* pd_col;
+    Qncl0(:, t)    = rho .* qd_col;
+end
 
 % u bounds: ES buses get [u_min, 1];  non-ES buses are clamped to 1
 u_lo = ones(nb, 1);
