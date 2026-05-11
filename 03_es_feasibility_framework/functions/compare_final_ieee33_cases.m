@@ -110,20 +110,16 @@ sol_ok  = double(isfield(r,'solver_ok') && r.solver_ok);
 volt_ok = double(isfield(r,'voltage_ok') && r.voltage_ok);
 feas    = double(sol_ok && volt_ok);
 
-if volt_ok
-    Vm   = getrf(r, 'Vmin_24h',  @() min(getrf(r,'Vmin_t',@()NaN)));
-    wb   = getrf(r, 'worst_bus', @() getrf(r,'VminBus_t', ...
-               @()NaN, r.worst_hour));
-    wh   = getrf(r, 'worst_hour', @()NaN);
-    Lo   = getrf(r, 'total_loss', @()NaN);
-    sv   = getrf(r, 'total_sv',   @()0);
-    nv   = getrf(r, 'n_viol_24h', @()0);
-    Mc   = getrf(r, 'mean_curtailment', @() getrf(r,'mean_curt',@()NaN));
-    Xc   = getrf(r, 'max_curtailment',  @() getrf(r,'max_curt', @()NaN));
-    Qt   = getrf(r, 'total_Qg',   @()qg_total);
-else
-    Vm=NaN; wb=NaN; wh=NaN; Lo=NaN; sv=NaN; nv=NaN; Mc=NaN; Xc=NaN; Qt=NaN;
-end
+% Always extract metrics — show real values even when volt_ok=0
+Vm   = getrf(r, 'Vmin_24h',  @() min(getrf(r,'Vmin_t',@()NaN)));
+wh   = getrf(r, 'worst_hour', @()NaN);
+wb   = getrf(r, 'worst_bus',  @() getrf(r,'VminBus_t', @()NaN, wh));
+Lo   = getrf(r, 'total_loss', @()NaN);
+sv   = getrf(r, 'total_sv',   @()NaN);
+nv   = getrf(r, 'n_viol_24h', @()NaN);
+Mc   = getrf(r, 'mean_curtailment', @() getrf(r,'mean_curt',@()NaN));
+Xc   = getrf(r, 'max_curtailment',  @() getrf(r,'max_curt', @()NaN));
+Qt   = getrf(r, 'total_Qg',   @()qg_total);
 
 row = {name, mat2str(buses(:)'), n_es, qg_total, qg_frac, ...
        rho, u_min, ...

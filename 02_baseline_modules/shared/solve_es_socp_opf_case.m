@@ -204,6 +204,7 @@ Obj = lossCost + curtCost + svCost;
 %  SOLVE
 % =========================================================================
 fprintf('  Solving %s ...\n', params.label);
+if isfield(ops,'gurobi'), ops.gurobi.DualReductions = 0; end
 sol = optimize(Con, Obj, ops);
 
 if ~isempty(params.out_dir) && ~exist(params.out_dir, 'dir'), mkdir(params.out_dir); end

@@ -50,16 +50,20 @@ fname_corrected = fullfile(out_tabs, 'table_case_baseline_corrected.csv');
 writetable(T_corrected, fname_corrected);
 fprintf('\nStage 1 artifact: %s\n', fname_corrected);
 
-%% DIAGNOSTIC: Flag any cases where SolverOK=1 but VoltageFeasible=0
-bad_mask = (T_corrected.SolverOK == 1) & (T_corrected.VoltageFeasible == 0);
+%% DIAGNOSTIC: Flag unexpected cases where SolverOK=1 but VoltageFeasible=0
+% C0 (no support) is the baseline and EXPECTED to fail — exclude from warning
+is_baseline = strcmp(T_corrected.Case, 'C0_NoSupport');
+bad_mask = (T_corrected.SolverOK == 1) & (T_corrected.VoltageFeasible == 0) & ~is_baseline;
+fprintf('\n  NOTE: C0_NoSupport Vmin=%.4f — baseline violation expected (no support).\n', ...
+    T_corrected.Vmin_pu(strcmp(T_corrected.Case,'C0_NoSupport')));
 if any(bad_mask)
-    fprintf('\n  WARNING: %d case(s) where solver succeeded but voltages violated:\n', sum(bad_mask));
+    fprintf('  WARNING: %d unexpected case(s) — solver OK but voltages violated:\n', sum(bad_mask));
     for i = find(bad_mask)'
         fprintf('    -> %s  Vmin=%.4f  VoltSlack=%.6f\n', ...
             T_corrected.Case{i}, T_corrected.Vmin_pu(i), T_corrected.TotalVoltSlack_pu(i));
     end
 else
-    fprintf('\n  OK: No cases with SolverOK=1 but VoltageFeasible=0.\n');
+    fprintf('  OK: No unexpected cases with SolverOK=1 but VoltageFeasible=0.\n');
 end
 
 %% DIAGNOSTIC: Flag any cases with non-zero voltage slack despite Feasible=1
