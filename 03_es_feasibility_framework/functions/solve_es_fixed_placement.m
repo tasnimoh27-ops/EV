@@ -47,4 +47,25 @@ res.es_buses   = es_buses(:)';
 res.n_es       = numel(es_buses);
 res.rho        = rho;
 res.u_min      = u_min;
+
+% Unified feasibility labels (solve_es_socp_opf_case uses hard Vmin constraint)
+res.solver_ok = (res.feasible);   % res.feasible = (sol.problem==0) from inner solver
+if res.solver_ok && isfield(res,'Vmin_t')
+    Vmin_lim = params.Vmin;
+    res.voltage_ok = (min(res.Vmin_t) >= Vmin_lim - 1e-6);
+    if isfield(res,'V_val')
+        viol_mask = (res.V_val < Vmin_lim);
+        viol_mask(topo.root,:) = false;
+        res.total_sv   = sum(sum(max(0, Vmin_lim - res.V_val)));
+        res.n_viol_24h = sum(sum(viol_mask));
+    else
+        res.total_sv   = 0;
+        res.n_viol_24h = 0;
+    end
+else
+    res.voltage_ok = false;
+    res.total_sv   = NaN;
+    res.n_viol_24h = NaN;
+end
+res.feasible = res.solver_ok && res.voltage_ok;
 end

@@ -215,6 +215,7 @@ solve_time = toc(t_solve);
 %  EXTRACT RESULTS
 % -------------------------------------------------------------------------
 res = struct();
+res.solver_ok  = (sol.problem == 0 || sol.problem == 4);
 res.feasible   = (sol.problem == 0);
 res.sol_code   = sol.problem;
 res.sol_info   = sol.info;
@@ -224,7 +225,7 @@ res.u_min      = u_min;
 res.N_ES_max   = N_max;
 res.obj_mode   = mode;
 
-if res.feasible || sol.problem == 4   % code 4 = near-feasible (numerical)
+if res.solver_ok   % code 0 = optimal, code 4 = near-feasible (numerical)
     z_val   = round(value(z));     % round binary
     c_val   = max(0, value(c));
     v_val   = value(v);
@@ -279,10 +280,11 @@ if res.feasible || sol.problem == 4   % code 4 = near-feasible (numerical)
 
     % Mark truly feasible only if soft voltage slack is negligible
     res.voltage_ok = (total_sv <= 1e-6);
+    res.feasible   = res.solver_ok && res.voltage_ok;
 
-    fprintf('  MISOCP: z=%d ES | Vmin=%.4f (h%d,b%d) | Loss=%.5f | Curt=%.1f%% | SV=%.2e | t=%.1fs\n',...
+    fprintf('  MISOCP: z=%d ES | Vmin=%.4f (h%d,b%d) | Loss=%.5f | Curt=%.1f%% | SV=%.2e | VoltOK=%d | t=%.1fs\n',...
         numel(es_sel), Vmin_24h, worst_hour, VminBus_t(worst_hour), ...
-        sum(loss_t), 100*mean_curt, total_sv, solve_time);
+        sum(loss_t), 100*mean_curt, total_sv, res.voltage_ok, solve_time);
 else
     % Infeasible — populate NaN
     res.z_val      = NaN(nb,1);

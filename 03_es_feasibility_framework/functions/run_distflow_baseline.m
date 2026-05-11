@@ -51,6 +51,12 @@ V_peak = V_all(:, worst_t);
 viol_buses = find(V_peak < Vmin);
 viol_buses = viol_buses(viol_buses ~= topo.root);
 
+% Voltage violation metrics (all hours)
+viol_mask   = (V_all < Vmin);
+viol_mask(topo.root, :) = false;
+total_sv    = sum(sum(max(0, Vmin - V_all(~isnan(V_all)))));
+n_viol_24h  = sum(sum(viol_mask));
+
 res.V_all        = V_all;
 res.loss_t       = loss_t;
 res.Vmin_t       = Vmin_t;
@@ -62,6 +68,13 @@ res.worst_bus    = worst_bus;
 res.total_loss   = total_loss;
 res.viol_buses_peak = viol_buses;
 res.n_viol_peak  = numel(viol_buses);
+res.total_sv     = total_sv;
+res.n_viol_24h   = n_viol_24h;
+
+% Unified feasibility labels
+res.solver_ok    = true;                         % DistFlow always runs (no solver)
+res.voltage_ok   = (Vmin_24h >= Vmin - 1e-6);   % all voltages within bounds
+res.feasible     = res.voltage_ok;
 
 fprintf('  Baseline: Vmin=%.4f (h%d,bus%d) | TotalLoss=%.5f | Violations(peak)=%d\n', ...
     Vmin_24h, worst_t, worst_bus, total_loss, numel(viol_buses));

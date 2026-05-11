@@ -154,6 +154,7 @@ solve_time = toc(t_s);
 %  EXTRACT
 % -------------------------------------------------------------------------
 res = struct();
+res.solver_ok  = (sol.problem==0 || sol.problem==4);
 res.feasible   = (sol.problem==0);
 res.sol_code   = sol.problem;
 res.sol_info   = sol.info;
@@ -161,7 +162,7 @@ res.solve_time = solve_time;
 res.rho=rho; res.u_min=u_min; res.N_ES_max=N_max;
 res.Qg_limit_frac = Qg_frac;
 
-if res.feasible || sol.problem==4
+if res.solver_ok
     z_val   = round(value(z));
     c_val   = max(0,value(c));
     v_val   = value(v);
@@ -186,8 +187,9 @@ if res.feasible || sol.problem==4
     res.total_sv=sum(sv_val(:)); res.max_sv=max(sv_val(:));
     res.total_Qg=sum(Qg_val(:)); res.mean_Qg=mean(Qg_val(:));
     res.voltage_ok = (res.total_sv<=1e-6);
-    fprintf('  Hybrid: N_ES=%d Qg_frac=%.2f | Vmin=%.4f | Loss=%.5f | Curt=%.1f%% | Qg=%.4f\n',...
-        numel(es_sel),Qg_frac,Vmin_24h,sum(loss_t),100*mean_curt,sum(Qg_val(:)));
+    res.feasible   = res.solver_ok && res.voltage_ok;
+    fprintf('  Hybrid: N_ES=%d Qg_frac=%.2f | Vmin=%.4f | Loss=%.5f | Curt=%.1f%% | Qg=%.4f | VoltOK=%d\n',...
+        numel(es_sel),Qg_frac,Vmin_24h,sum(loss_t),100*mean_curt,sum(Qg_val(:)),res.voltage_ok);
 else
     res.es_buses=[]; res.n_es=NaN; res.V_val=NaN(nb,T);
     res.total_loss=NaN; res.Vmin_24h=NaN; res.worst_hour=NaN; res.worst_bus=NaN;

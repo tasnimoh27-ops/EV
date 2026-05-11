@@ -121,18 +121,18 @@ Obj = lossCost + svCost;
 % -------------------------------------------------------------------------
 sol = optimize(Con, Obj, ops);
 res = struct();
-res.feasible  = (sol.problem == 0);
+res.solver_ok = (sol.problem == 0);
 res.sol_code  = sol.problem;
 res.sol_info  = sol.info;
 
-if res.feasible
+if res.solver_ok
     v_val   = value(v);
     V_val   = sqrt(max(v_val,0));
     ell_val = value(ell);
     Qg_val  = value(Qg);
     loss_t2 = arrayfun(@(t) sum(R.*ell_val(:,t)), 1:T)';
     Vmin_t  = min(V_val)';
-    [Vmin_v, VminBus] = min(V_val,[],1);
+    [~, VminBus] = min(V_val,[],1);
 
     res.V_val       = V_val;
     res.Qg_val      = Qg_val;
@@ -143,12 +143,23 @@ if res.feasible
     res.Vmin_24h    = min(Vmin_t);
     res.worst_hour  = find(Vmin_t==min(Vmin_t),1);
     res.total_Qg    = sum(Qg_val(:));
-    res.max_sv      = 0;
+
+    % Post-hoc voltage feasibility check (hard constraints should guarantee
+    % this, but numerical tolerances can cause tiny violations)
+    viol_mask = (V_val < Vmin);
+    viol_mask(root,:) = false;
+    res.total_sv   = sum(sum(max(0, Vmin - V_val)));
+    res.n_viol_24h = sum(sum(viol_mask));
+    res.max_sv     = 0;
     if getf(params,'soft_voltage',false)
-        res.max_sv = max(max(value(sv)));
+        sv_val = value(sv);
+        res.max_sv   = max(max(sv_val));
+        res.total_sv = sum(sum(sv_val));
     end
-    fprintf('  Qg-SOCP: Vmin=%.4f (h%d) | Loss=%.5f | Qg_total=%.4f\n',...
-        res.Vmin_24h, res.worst_hour, res.total_loss, res.total_Qg);
+    res.voltage_ok = (res.Vmin_24h >= Vmin - 1e-6);
+
+    fprintf('  Qg-SOCP: Vmin=%.4f (h%d) | Loss=%.5f | Qg_total=%.4f | VoltOK=%d\n',...
+        res.Vmin_24h, res.worst_hour, res.total_loss, res.total_Qg, res.voltage_ok);
 else
     res.V_val      = NaN(nb,T);
     res.Qg_val     = NaN(nb,T);
@@ -160,8 +171,14 @@ else
     res.worst_hour = NaN;
     res.total_Qg   = NaN;
     res.max_sv     = NaN;
+    res.total_sv   = NaN;
+    res.n_viol_24h = NaN;
+    res.voltage_ok = false;
     fprintf('  Qg-SOCP: INFEASIBLE | Code=%d\n', sol.problem);
 end
+
+% Unified feasibility: solver succeeded AND voltage bounds met
+res.feasible = res.solver_ok && res.voltage_ok;
 end
 
 function v = getf(s,f,d)
