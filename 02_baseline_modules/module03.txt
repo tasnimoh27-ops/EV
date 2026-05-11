@@ -1,0 +1,27 @@
+MODULE 3 — Load Profile Plotting
+==================================
+File: module3.m (Plot_the_graph_from_load_profile.m)
+
+WHAT IT DOES
+------------
+Reads the 24-hour load profile CSV and plots:
+  - Total active power demand vs hour
+  - Total reactive power demand vs hour
+  - Per-bus load heatmap across 24 hours
+  - Peak hour (hour 20) bus-by-bus bar chart
+
+Useful for visually inspecting the load data before running OPF.
+
+WHY RUN IT
+----------
+Quick sanity check on load profile shape and peak timing.
+Confirms peak occurs at hour 20 (multiplier 1.20 x base load).
+
+OUTPUT
+------
+Displays figures in MATLAB. Optionally saves PNG to ./results/.
+
+DEPENDS ON
+----------
+build_24h_load_profile_from_csv.m
+01_data/loads_base.csv
