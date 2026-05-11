@@ -1,0 +1,8 @@
+ScenarioID,Label,Status,MinVmin_pu,TotalLoss_pu,MeanCurt_pct
+9A1_terminal_only,"9A-1: Terminal Only {18,33}",INFEASIBLE,NaN,NaN,NaN
+9A2_add_bus9,"9A-2: {9, 18, 33}",INFEASIBLE,NaN,NaN,NaN
+9A3_add_bus26,"9A-3: {9, 18, 26, 33}",INFEASIBLE,NaN,NaN,NaN
+9A4_vis_top5,"9A-4: VIS Top-5 {6,9,18,26,33}",INFEASIBLE,NaN,NaN,NaN
+9A5_vis_full,"9A-5: VIS Full {6,9,13,18,26,30,33}",INFEASIBLE,NaN,NaN,NaN
+9A6_dense,"9A-6: Dense {3,6,9,12,15,18,24,27,30,33}",INFEASIBLE,NaN,NaN,NaN
+9A7_all_buses,"9A-7: All Non-Slack Buses",INFEASIBLE,NaN,NaN,NaN

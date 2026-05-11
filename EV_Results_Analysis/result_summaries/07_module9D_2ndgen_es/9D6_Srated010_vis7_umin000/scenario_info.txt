@@ -1,0 +1,18 @@
+==================================================
+ MODULE 9 SCENARIO: 9D-6: 2ndGen S=0.10 VIS-7 u_min=0.00
+==================================================
+ ES buses      : [6 9 13 18 26 30 33]
+ rho(ES buses) : [0.4 0.4 0.4 0.4 0.4 0.4 0.4]
+ u_min(ES)     : [0 0 0 0 0 0 0]
+ lambda_u      : 5.0000
+ Qg buses      : []
+ lambda_q      : 0.0000
+ Second-gen ES : 1
+ S_rated(ES)   : [0.1 0.1 0.1 0.1 0.1 0.1 0.1]
+ Vmin / Vmax   : 0.9500 / 1.0500 pu
+ Soft voltage  : 0
+--------------------------------------------------
+ FEASIBLE      : 0
+ Solver code   : 4
+ Solver info   : Numerical problems (<a href="yalmip.github.io/inside/debuggingnumerics">learn to debug</a>) (GUROBI)
+==================================================
