@@ -55,18 +55,29 @@ Qs_max_pu  = 0.10;
 N_s_sweep  = 1:12;   % sweep up to 12 STATCOMs (stop early if feasible)
 N_e_fixed  = 32;     % full ES budget for C7
 
+%% VSI CANDIDATE RESTRICTION
+% Limit STATCOM placement to top-K voltage-sensitive buses.
+% Reduces binary variables 32 -> K, making BnB tractable.
+% With 32 candidates C(32,6)~900k combos; with 15 candidates C(15,6)~5k.
+K_cand = 15;
+fprintf('Computing VSI for STATCOM candidate selection...\n');
+vsi = calculate_voltage_impact_score(topo, loads, rho);
+statcom_cand = sort(vsi.rank(1:K_cand)');
+statcom_cand = statcom_cand(statcom_cand ~= topo.root);
+fprintf('  STATCOM candidates (top-%d VSI): %s\n\n', K_cand, mat2str(statcom_cand));
+
 %% BASE PARAMS (shared)
-% Hard voltage constraints (soft_voltage=false) make the sweep fast:
-%   - Infeasible N_s: LP relaxation detects it in ~1-5s
-%   - Feasible N_s: solver finds first feasible solution quickly
-% Soft-voltage mode is 100x slower (must prove minimum slack = 0).
-p_base.Vmin          = 0.95;
-p_base.Vmax          = 1.05;
-p_base.soft_voltage  = false;     % hard voltage for fast infeasibility detection
-p_base.obj_mode      = 'planning';
-p_base.w_loss        = 1.0;
-p_base.w_s           = 0.0;       % don't penalise count — budget constraint handles it
-p_base.w_vio         = 0.0;       % not used with hard voltage
+% Hard voltage + VSI-restricted candidates: fast sweep
+%   - Infeasible N_s: BnB quickly explores C(K,N_s) combos
+%   - Feasible N_s: first feasible solution found fast
+p_base.Vmin            = 0.95;
+p_base.Vmax            = 1.05;
+p_base.soft_voltage    = false;
+p_base.obj_mode        = 'planning';
+p_base.w_loss          = 1.0;
+p_base.w_s             = 0.0;
+p_base.w_vio           = 0.0;
+p_base.candidate_buses = statcom_cand;
 p_base.price         = price;
 p_base.time_limit    = 120;       % 2 min max per solve (was 300)
 p_base.MIPGap        = 0.05;      % 5% gap for sweep (was 1%)
@@ -112,13 +123,15 @@ if ~isnan(N_s_min_c6)
 end
 
 for N_s = 0:N_s_limit
-    p7 = p_base;
-    p7.rho     = rho;
-    p7.u_min   = u_min;
-    p7.N_e_max = N_e_fixed;
-    p7.N_s_max = N_s;
-    p7.w_e     = 0.0;    % don't penalise ES count — budget handles it
-    p7.w_curt  = 0.0;    % no curtailment penalty in sweep mode
+    p7 = rmfield(p_base, 'candidate_buses');  % C7 uses separate _es/_s fields
+    p7.rho                 = rho;
+    p7.u_min               = u_min;
+    p7.N_e_max             = N_e_fixed;
+    p7.N_s_max             = N_s;
+    p7.candidate_buses_s   = statcom_cand;      % VSI-restricted STATCOM
+    p7.candidate_buses_es  = setdiff(1:topo.nb, topo.root)';  % all buses for ES
+    p7.w_e     = 0.0;
+    p7.w_curt  = 0.0;
 
     fprintf('\n  C7 | N_e_max=%d N_s_max=%d\n', N_e_fixed, N_s);
     r = solve_es_statcom_misocp(topo, loads, p7);
