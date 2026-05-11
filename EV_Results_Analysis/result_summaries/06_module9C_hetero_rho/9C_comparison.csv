@@ -1,0 +1,7 @@
+ID,Label,Status,MinVmin_pu,TotalLoss_pu,MeanCurt_pct
+9C1_hetero_umin020,9C-1: Hetero-rho  u_min=0.20,INFEASIBLE,NaN,NaN,NaN
+9C2_hetero_umin010,9C-2: Hetero-rho  u_min=0.10,INFEASIBLE,NaN,NaN,NaN
+9C3_hetero_umin000,9C-3: Hetero-rho  u_min=0.00,INFEASIBLE,NaN,NaN,NaN
+9C4_uni_rho050,9C-4: Uni rho=0.50  u_min=0.20,INFEASIBLE,NaN,NaN,NaN
+9C5_uni_rho060,9C-5: Uni rho=0.60  u_min=0.20,INFEASIBLE,NaN,NaN,NaN
+9C6_uni_rho060_umin0,9C-6: Uni rho=0.60  u_min=0.00,INFEASIBLE,NaN,NaN,NaN

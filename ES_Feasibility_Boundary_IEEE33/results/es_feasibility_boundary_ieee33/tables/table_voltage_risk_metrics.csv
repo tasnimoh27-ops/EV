@@ -1,0 +1,5 @@
+Solution,N_Scenarios,FeasProb,ExpViolation,WorstCaseViol,VaR_95,CVaR_95
+C0_NoSupport,4,0,1,1,1,1
+C1_QgOnly,4,1,0,0,0,0
+C2_WeakBus,4,0,1,1,1,1
+C3_VSI7,4,0,1,1,1,1

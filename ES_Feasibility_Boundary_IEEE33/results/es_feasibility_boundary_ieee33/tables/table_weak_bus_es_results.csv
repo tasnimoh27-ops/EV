@@ -1,0 +1,17 @@
+PlacementName,Buses,N_ES,rho,u_min,Feasible,Vmin_pu,WorstBus,TotalLoss_pu,MeanCurt,SolCode
+WB2,[18 33],2,0.3,0,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.3,0.2,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.5,0,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.5,0.2,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.6,0,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.6,0.2,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.7,0,0,NaN,NaN,NaN,NaN,12
+WB2,[18 33],2,0.7,0.2,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.3,0,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.3,0.2,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.5,0,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.5,0.2,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.6,0,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.6,0.2,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.7,0,0,NaN,NaN,NaN,NaN,12
+WB4,[17 18 32 33],4,0.7,0.2,0,NaN,NaN,NaN,NaN,12

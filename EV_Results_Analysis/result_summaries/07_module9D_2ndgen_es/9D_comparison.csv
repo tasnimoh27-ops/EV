@@ -1,0 +1,7 @@
+ID,Label,Status,MinVmin_pu,TotalLoss_pu,MeanCurt_pct,MaxQ_ES_pu
+9D1_Srated005_term_umin020,"9D-1: 2ndGen S=0.05 {18,33} u_min=0.20",INFEASIBLE,NaN,NaN,NaN,NaN
+9D2_Srated010_term_umin020,"9D-2: 2ndGen S=0.10 {18,33} u_min=0.20",INFEASIBLE,NaN,NaN,NaN,NaN
+9D3_Srated015_term_umin020,"9D-3: 2ndGen S=0.15 {18,33} u_min=0.20",INFEASIBLE,NaN,NaN,NaN,NaN
+9D4_Srated010_term_umin000,"9D-4: 2ndGen S=0.10 {18,33} u_min=0.00",INFEASIBLE,NaN,NaN,NaN,NaN
+9D5_Srated010_vis7_umin020,"9D-5: 2ndGen S=0.10 VIS-7 u_min=0.20",INFEASIBLE,NaN,NaN,NaN,NaN
+9D6_Srated010_vis7_umin000,"9D-6: 2ndGen S=0.10 VIS-7 u_min=0.00",INFEASIBLE,NaN,NaN,NaN,NaN

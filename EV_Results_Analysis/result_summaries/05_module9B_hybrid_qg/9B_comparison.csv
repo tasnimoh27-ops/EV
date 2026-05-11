@@ -1,0 +1,13 @@
+ScenarioID,Label,Status,MinVmin_pu,TotalLoss_pu,MeanCurt_pct,TotalQg_puh
+9B_Qg16_max0.03,"9B-{16}  Qmax=0.03pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg16_max0.05,"9B-{16}  Qmax=0.05pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg16_max0.08,"9B-{16}  Qmax=0.08pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg16_max0.10,"9B-{16}  Qmax=0.10pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg9_16_max0.03,"9B-{9,16}  Qmax=0.03pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg9_16_max0.05,"9B-{9,16}  Qmax=0.05pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg9_16_max0.08,"9B-{9,16}  Qmax=0.08pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg9_16_max0.10,"9B-{9,16}  Qmax=0.10pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg6_9_16_max0.03,"9B-{6,9,16}  Qmax=0.03pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg6_9_16_max0.05,"9B-{6,9,16}  Qmax=0.05pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg6_9_16_max0.08,"9B-{6,9,16}  Qmax=0.08pu",INFEASIBLE,NaN,NaN,NaN,NaN
+9B_Qg6_9_16_max0.10,"9B-{6,9,16}  Qmax=0.10pu",INFEASIBLE,NaN,NaN,NaN,NaN

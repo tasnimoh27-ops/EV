@@ -1,0 +1,5 @@
+ScenarioID,Name,EV_Mult,Type
+1,S1_low,1.4,deterministic
+2,S2_medium,1.6,deterministic
+3,S3_high,1.8,deterministic
+4,S4_extreme,2,deterministic
