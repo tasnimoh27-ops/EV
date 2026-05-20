@@ -149,7 +149,7 @@ for s = 1:length(pv_scale_list)
     loads_pv_solve.P24 = loads_pv.P24_net;
     loads_pv_solve.Q24 = loads_pv.Q24_net;
 
-    r = solve_es1_misocp(topo, loads_pv_solve, p_base);
+    r = solve_es1_pv_misocp(topo, loads_pv_solve, p_base);
 
     % Extract metrics
     case_name = sprintf('A_PV_Scale_%.2f', pv_scale);
@@ -254,18 +254,16 @@ fprintf('  Saved: %s (%d rows)\n', fname_with_es, height(T_with_es));
 fprintf('\n--- PART C: PV HOSTING CAPACITY ANALYSIS ---\n');
 
 % Hosting capacity = max pv_scale where all voltages stay in [0.95, 1.05]
+feasible_scales_no_es = T_no_es.pv_scale(T_no_es.VoltageFeasible == 1);
 hosting_no_es = NaN;
-for i = 1:height(T_no_es)
-    if T_no_es.VoltageFeasible(i) == 1
-        hosting_no_es = T_no_es.pv_scale(i);  % take last feasible
-    end
+if ~isempty(feasible_scales_no_es)
+    hosting_no_es = max(feasible_scales_no_es);
 end
 
+feasible_scales_with_es = T_with_es.pv_scale(T_with_es.VoltageFeasible == 1);
 hosting_with_es = NaN;
-for i = 1:height(T_with_es)
-    if T_with_es.VoltageFeasible(i) == 1
-        hosting_with_es = T_with_es.pv_scale(i);  % take last feasible
-    end
+if ~isempty(feasible_scales_with_es)
+    hosting_with_es = max(feasible_scales_with_es);
 end
 
 % Find best ES configuration at highest feasible PV scale
@@ -277,10 +275,14 @@ if ~isnan(hosting_with_es)
         T_best = T_with_es(idx_best, :);
         [~, min_idx] = min(T_best.N_ES_used);
         best_n_es = T_best.N_ES_used(min_idx);
-        % Parse ES buses string
+        % Parse ES buses string safely (avoid eval)
+        bus_str = T_best.ES_Buses_str{min_idx};
         try
-            bus_str = T_best.ES_Buses_str{min_idx};
-            best_es_buses = eval(bus_str);
+            % Use str2num for safe parsing of "[a b c]" format
+            best_es_buses = str2num(bus_str); %#ok<ST2NM>
+            if isempty(best_es_buses)
+                best_es_buses = [];
+            end
         catch
             best_es_buses = [];
         end

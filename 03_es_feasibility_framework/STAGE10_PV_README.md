@@ -93,6 +93,8 @@ fig5_min_es1_count_vs_pv_penetration.png
 ### Step 1: Switch to Feature Branch
 ```bash
 git checkout feature/stage10-pv-penetration
+# or if already cloned:
+git pull origin feature/stage10-pv-penetration
 ```
 
 ### Step 2: Open MATLAB

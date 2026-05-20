@@ -74,7 +74,7 @@ module01                   % run one module
 main_run_es_research
 ```
 
-### Phase 2 — ES Feasibility Framework (Stages 1–10)
+### Phase 2 — ES Feasibility Framework (Stages 1–9)
 
 ```matlab
 cd('03_es_feasibility_framework/main')
@@ -88,12 +88,25 @@ run_stage6_es1                   % ES-1 (Hou reactive model) standalone
 run_stage7_es1_hybrid            % ES-1 substitution curves
 run_stage8_es1_joint             % ES-1 joint solver
 run_stage9_publication_figures   % generate all publication figures
-run_stage10_pv_penetration       % NEW: PV penetration with ES-1 reactive support
 
 % Results saved to 04_results/es_framework/
 ```
 
-**New in Stage 10:** See `03_es_feasibility_framework/STAGE10_PV_README.md` for full PV penetration study documentation.
+### Phase 2 — Stage 10 (Feature Branch)
+
+**Stage 10: PV Penetration Study** is available on a dedicated feature branch:
+
+```bash
+git checkout feature/stage10-pv-penetration
+```
+
+Then in MATLAB:
+```matlab
+cd('03_es_feasibility_framework/main')
+run_stage10_pv_penetration       % PV penetration with ES-1 reactive support
+```
+
+See `03_es_feasibility_framework/STAGE10_PV_README.md` for full documentation.
 
 ---
 
@@ -124,7 +137,9 @@ run_stage10_pv_penetration       % NEW: PV penetration with ES-1 reactive suppor
 | 7 | `run_stage7_es1_hybrid` | Can ES-1 fully substitute STATCOM and ESS? |
 | 8 | `run_stage8_es1_joint` | What is the device trade-off curve for ES-1 + supplemental hardware? |
 | 9 | `run_stage9_publication_figures` | Generate all 6 publication figures |
-| **10** | **`run_stage10_pv_penetration`** | **How does PV penetration affect feeder voltage, and can ES-1 improve hosting capacity?** |
+| **10*** | **`run_stage10_pv_penetration`** | **How does PV penetration affect feeder voltage, and can ES-1 improve hosting capacity?** |
+
+*Stage 10 is on `feature/stage10-pv-penetration` branch. All other stages on `main`.
 
 ---
 
