@@ -10,53 +10,72 @@
 
 ---
 
+## Start Here — Navigation Guide
+
+**For understanding the full research:**
+→ Read [`05_analysis/COMPLETE_STUDY_REPORT.md`](05_analysis/COMPLETE_STUDY_REPORT.md)  
+Master document: problem explanation, all methods, all 24 modules, all 9 stages, results, terminology. **Start here.**
+
+**For finding specific results:**
+→ Use [`05_analysis/INDEX.md`](05_analysis/INDEX.md)  
+Quick reference to locate figures, tables, and analysis by phase or stage.
+
+**For running Phase 1 (modules 01–24):**
+→ See `02_baseline_modules/MODULE_REFERENCE.txt`  
+Central index with descriptions, dependencies, and recommended run order.
+
+**For PV penetration study (Stage 10, feature branch only):**
+→ Read [`03_es_feasibility_framework/STAGE10_PV_README.md`](03_es_feasibility_framework/STAGE10_PV_README.md)  
+Complete documentation: modeling, assumptions, run instructions, expected results.
+
+---
+
+**Folder purposes:**
+- **01_data/** — IEEE 33-bus network topology + load profiles (input data, read-only)
+- **02_baseline_modules/** — Phase 1 exploratory pipeline (modules 01–24)
+- **03_es_feasibility_framework/** — Phase 2 rigorous framework (stages 1–9, stage 10 on feature branch)
+- **04_results/** — Generated outputs (figures, tables, MATLAB checkpoints)
+- **05_analysis/** — Master documentation + result summaries organized by phase
+
+---
+
 ## Repository Structure
 
 ```
 EV Research code/
 │
-├── 01_data/                         Input data: IEEE 33-bus network CSVs
-│                                    (branch topology, base load profiles)
+├── 01_data/                         IEEE 33-bus network + load profiles (input data)
 │
-├── 02_baseline_modules/             Phase 1 — Exploratory pipeline (Modules 01–24)
-│   ├── module01.m – module24.m      Run in order; each is self-contained
-│   ├── main_run_es_research.m       Master runner (runs all modules)
-│   ├── MODULE_REFERENCE.txt         Full module index with descriptions
-│   └── shared/                      Helper functions used across modules
+├── 02_baseline_modules/             PHASE 1: Exploratory pipeline (modules 01–24)
+│   ├── module01.m – module24.m      Run sequentially; each self-contained
+│   ├── main_run_es_research.m       Master runner for all modules
+│   ├── MODULE_REFERENCE.txt         Module index and descriptions
+│   └── shared/                      Helper functions used by all modules
 │
-├── 03_es_feasibility_framework/     Phase 2 — Rigorous comparative study (Stages 1–9)
-│   ├── data/                        IEEE 33-bus network + 24h load profile
-│   ├── functions/                   SOCP/MISOCP solvers for all technologies
-│   │   ├── solve_statcom_misocp.m
-│   │   ├── solve_ess_misocp.m
-│   │   ├── solve_es1_misocp.m          ← ES-1 Hou reactive model
-│   │   ├── solve_es1_statcom_misocp.m
-│   │   ├── solve_es1_ess_misocp.m
-│   │   └── solve_es1_statcom_ess_misocp.m
-│   ├── main/                        Stage runner scripts (run_stage1 → run_stage9)
-│   └── plotting/                    Figure generation functions
+├── 03_es_feasibility_framework/     PHASE 2: Rigorous comparative framework (stages 1–9, stage 10 on feature branch)
+│   ├── data/                        IEEE 33-bus network data + 24h profile
+│   ├── functions/                   Solvers: SOCP/MISOCP for STATCOM, ESS, ES, ES-1, hybrids
+│   ├── main/                        Stage runners (run_stage1 → run_stage9, run_stage10)
+│   ├── plotting/                    Figure generation functions
+│   └── STAGE10_PV_README.md         PV penetration study (feature branch only)
 │
-├── 04_results/                      All generated outputs
-│   ├── module_outputs/              Raw outputs from Modules 01–24
-│   │   ├── out_distflow/            Modules 01–02: DistFlow baseline
-│   │   ├── out_loads/               Module 03: Load profiles
-│   │   ├── out_socp_opf_gurobi/     Module 04: SOCP OPF with Qg
-│   │   ├── out_socp_opf_gurobi_es/  Modules 07–08: ES scenario results
-│   │   └── out_module9/             Modules 09–24: All distributed ES studies
-│   └── es_framework/                Outputs from Phase 2 (Stages 1–9)
-│       ├── figures/                 Exploratory plots (.fig + .png)
-│       │   └── stage9/              Publication figures (fig1–fig6)
+├── 04_results/                      ALL OUTPUTS: figures, tables, MATLAB checkpoints
+│   ├── module_outputs/              Phase 1 raw outputs (modules 01–24)
+│   └── es_framework/                Phase 2 outputs (stages 1–9, stage 10)
+│       ├── figures/                 Plots (.png + .fig)
+│       │   ├── stage9/              Publication figures (fig1–fig6)
+│       │   └── stage10/             PV study figures
 │       ├── tables/                  Result tables (.csv) — one per stage
-│       └── raw_outputs/             MATLAB workspace checkpoints (.mat)
+│       └── raw_outputs/             MATLAB checkpoints (.mat)
 │
-└── 05_analysis/
-    ├── COMPLETE_STUDY_REPORT.md     ← Single master document — read this first
-    └── result_summaries/            Raw outputs organised by study stage
-        ├── 00_publication_figures/  Ready-to-use publication figures (Phase 1)
-        ├── 01_baseline_distflow/    Baseline DistFlow results
-        ├── 02_qg_opf_baseline/      Qg OPF reference results
-        ├── 03_module8_scenarios/    Module 8 multi-scenario results
-        └── 04_module9A/ … 13_/      Module 9 submodule outputs
+└── 05_analysis/                     DOCUMENTATION & RESULT SUMMARIES
+    ├── COMPLETE_STUDY_REPORT.md     ← READ THIS FIRST (master document)
+    ├── INDEX.md                     Navigation guide for all results
+    └── result_summaries/            Phase 1 outputs organized by module
+        ├── 00_publication_figures/  Ready-to-use publication figures
+        ├── 01_baseline_distflow/    Network + DistFlow baseline
+        ├── 02_qg_opf_baseline/      Qg-only OPF results
+        └── 03–13_module_results/    Modules 8–9 detailed breakdowns
 ```
 
 ---
@@ -122,6 +141,8 @@ See `03_es_feasibility_framework/STAGE10_PV_README.md` for full documentation.
 | ES placement | 19–22 | VSI bus ranking, greedy placement, MISOCP optimisation |
 | Sensitivity | 23–24 | Budget sensitivity, benchmark comparison |
 
+**Detailed module reference:** See `02_baseline_modules/MODULE_REFERENCE.txt` for full index, descriptions, and run order.
+
 ---
 
 ## Phase 2 — Stage Sequence
@@ -163,8 +184,19 @@ See `03_es_feasibility_framework/STAGE10_PV_README.md` for full documentation.
 
 ## Documentation
 
-**`05_analysis/COMPLETE_STUDY_REPORT.md`** — Single master document covering everything: problem setup, network description, all 24 modules explained with results, all 9 stages explained with results, complete figure and table index, final synthesis. Read this to understand the full research.
+**Key documents** (see "Start Here" for guidance):
 
-**`04_results/es_framework/figures/stage9/`** — Six publication-ready figures (fig1–fig6).
+| Document | Location | Content |
+|----------|----------|---------|
+| **COMPLETE_STUDY_REPORT.md** | `05_analysis/` | Full explanation of problem, all modules, all stages, results — **read this for deep understanding** |
+| **INDEX.md** | `05_analysis/` | Navigation guide to find results by phase, stage, or topic — **read this to locate specific outputs** |
+| **MODULE_REFERENCE.txt** | `02_baseline_modules/` | All 24 modules indexed with descriptions, dependencies, run order — **read this to run Phase 1** |
+| **STAGE10_PV_README.md** | `03_es_feasibility_framework/` | PV penetration study (feature branch only) — modeling, assumptions, run steps — **read this for Stage 10** |
 
-**`04_results/es_framework/tables/`** — One CSV result table per stage.
+**Output locations:**
+
+| What | Where |
+|-----|-------|
+| Publication figures | `04_results/es_framework/figures/stage9/` (fig1–fig6) + `stage10/` (fig1–fig5) |
+| Result tables (CSV) | `04_results/es_framework/tables/` — one per stage (stages 1–10) |
+| Phase 1 analysis | `05_analysis/result_summaries/` — organized by module type (modules 8–9 detailed) |
