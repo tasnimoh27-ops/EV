@@ -356,13 +356,13 @@ end
 %% D5: Infeasibility diagnosis
 if run_D5_infeasibility
     fprintf('\n--- D5: Infeasibility Diagnostics ---\n');
+    if exist('T_p1p5','var') && ~isempty(T_p1p5)
+        plot_worst_voltage_deficit_vs_rho(T_p1p5, 0.20, ...
+            fullfile(out_figs,'fig_worst_voltage_deficit_vs_rho.png'));
+    end
     if exist('T_sweep','var') && ~isempty(T_sweep)
         T_diag = diagnose_voltage_infeasibility(topo, loads_ev, T_sweep, out_tabs);
         save(fullfile(out_raw,'infeasibility_diag.mat'),'T_diag');
-        if ~isempty(T_diag) && height(T_diag) > 0
-            plot_voltage_slack_vs_es_budget(T_sweep, ...
-                fullfile(out_figs,'fig_worst_voltage_deficit_vs_rho.png'));
-        end
     else
         fprintf('  No sweep data — skip D5\n');
     end
