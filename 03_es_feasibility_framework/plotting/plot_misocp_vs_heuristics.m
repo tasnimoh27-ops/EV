@@ -34,7 +34,12 @@ for i = 1:numel(methods)
 end
 set(ax1,'YTick',1:numel(methods),'YTickLabel',strrep(methods,'_',' '));
 xlabel('V_{min} (p.u.)'); title('Minimum Voltage');
-xlim([0 1.05]); grid on;
+grid on;
+max_vmin = max(vmin_plot(vmin_plot > 0));
+if isempty(max_vmin) || max_vmin == 0
+    max_vmin = 1.0;
+end
+xlim([0 max(1.05, max_vmin*1.05)]);
 
 ax2 = subplot(1,2,2);
 b2 = barh(1:numel(methods), loss_plot, 0.6);
@@ -48,7 +53,12 @@ for i = 1:numel(methods)
 end
 set(ax2,'YTick',1:numel(methods),'YTickLabel',strrep(methods,'_',' '));
 xlabel('Total Loss (p.u.)'); title('Total Feeder Loss');
-grid on; xlim([0 max(loss_plot)*1.2]);
+grid on;
+max_loss = max(loss_plot(loss_plot > 0));
+if isempty(max_loss) || max_loss == 0
+    max_loss = 0.2;
+end
+xlim([0 max_loss*1.2]);
 
 sgtitle('MISOCP vs Heuristic Placement Comparison (Blue/Orange=Feasible, Gray=Infeasible)');
 
