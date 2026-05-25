@@ -891,7 +891,7 @@ A lightweight post-processing analysis that compares individual and hybrid techn
 | Std ES + ESS | 32 ES + 1 ESS | 33 | 0.9544 pu | 0.083 pu | **Yes** | Low-loss hybrid; standard ES reduces ESS from 3 to 1 |
 | **ES-1 only** | **4 ES-1** | **4** | **0.9500 pu** | **0.381 pu** | **Yes** | **Best ES-based standalone; fully replaces STATCOM/ESS** |
 | ES-1 joint | 4 ES-1 | 4 | 0.9500 pu | 0.381 pu | **Yes** | No traditional STATCOM or ESS needed with ES-1 |
-| PV only | PV at 2.7 MW | 0 | 0.8308 pu | 0.588 pu | **No** | Reduces loss but no voltage support |
+| PV only | PV at 5.4 MW (200% scale) | 0 | 0.8308 pu | 0.588 pu | **No** | Reduces loss but no voltage support |
 | PV + ES-1 | PV (5.4 MW) + 8 ES-1 | 8 | 0.9500 pu | 0.448 pu | **Yes** | Best PV-integrated feasible case; maintains voltage at 200% PV scale |
 
 ### Interpretation and Deployment Recommendations
@@ -1125,7 +1125,7 @@ An additional post-processing analysis was added to compare individual and hybri
 | Standard ES + STATCOM | 32+2 | Yes | 0.9500 pu | **0.0786 pu** | 2.0 MVAr STATCOM + 2.54 MVA NCL | **Lowest-loss feasible hybrid** |
 | Standard ES + ESS | 32+1 | Yes | 0.9544 pu | 0.0826 pu | ESS rating + 2.54 MVA NCL | Low-loss hybrid alternative |
 | ES-1 only | 4 | Yes | 0.9500 pu | 0.3806 pu | 4.0 MVAr equivalent | **Best ES-based standalone option** |
-| PV-only | — | No | 0.8308 pu | 0.5878 pu | 2.7 MW | Reduces loss but no voltage support |
+| PV-only | — | No | 0.8308 pu | 0.5878 pu | 5.4 MW (200% scale) | Reduces loss but no voltage support |
 | PV + ES-1 | 8 | Yes | 0.9500 pu | 0.4476 pu | 5.4 MW + 8.0 MVAr equivalent | **Best PV-integrated feasible case** at 200% PV scale |
 
 ### Key Findings
