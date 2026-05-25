@@ -108,6 +108,9 @@ run_stage7_es1_hybrid            % ES-1 substitution curves
 run_stage8_es1_joint             % ES-1 joint solver
 run_stage9_publication_figures   % generate all publication figures
 
+% Post-processing analysis:
+run_device_composition_analysis  % Device composition and installed capacity analysis
+
 % Results saved to 04_results/es_framework/
 ```
 
@@ -159,6 +162,7 @@ See `03_es_feasibility_framework/STAGE10_PV_README.md` for full documentation.
 | 8 | `run_stage8_es1_joint` | What is the device trade-off curve for ES-1 + supplemental hardware? |
 | 9 | `run_stage9_publication_figures` | Generate all 6 publication figures |
 | **10*** | **`run_stage10_pv_penetration`** | **How does PV penetration affect feeder voltage, and can ES-1 improve hosting capacity?** |
+| Post-proc | `run_device_composition_analysis` | Compare all device compositions with installed rating information |
 
 *Stage 10 is on `feature/stage10-pv-penetration` branch. All other stages on `main`.
 

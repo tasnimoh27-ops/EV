@@ -860,6 +860,74 @@ Six figures packaged for manuscript submission:
 
 ---
 
+## POST-PROCESSING: DEVICE COMPOSITION AND INSTALLED CAPACITY ANALYSIS
+
+**Runner:** `03_es_feasibility_framework/main/run_device_composition_analysis.m`
+**Output table:** `04_results/es_framework/tables/table_device_composition_analysis.csv`
+**Output figures:**
+- `04_results/es_framework/figures/fig_device_composition_feasibility.png`
+- `04_results/es_framework/figures/fig_device_composition_loss.png`
+- `04_results/es_framework/figures/fig_device_composition_device_count.png`
+- `04_results/es_framework/figures/fig_device_composition_installed_capacity.png`
+
+### What This Analysis Does
+
+A lightweight post-processing analysis that compares individual and hybrid technology compositions using the already-generated optimisation results. This analysis goes beyond device count by adding installed rating information:
+
+- **STATCOM and ES-1** are compared using installed MVAr support because both have explicit reactive-power limits in the model.
+- **Standard ES** is reported as controllable non-critical-load capacity rather than MVAr injection.
+- **ESS** is treated separately because it requires inverter MVA and battery MWh normalisation.
+- **PV** is reported by installed MW capacity.
+
+### Key Results
+
+| Case | Composition | Devices | V_min | Loss | Feasible | Notes |
+|---|---|---|---|---|---|---|
+| Baseline | No support | 0 | 0.8308 pu | 0.671 pu | **No** | Reference stressed feeder |
+| STATCOM only | 7 STATCOM | 7 | 0.9500 pu | 0.537 pu | **Yes** | 7.0 MVAr total reactive support |
+| ESS only | 3 ESS | 3 | 0.9500 pu | 0.434 pu | **Yes** | Requires inverter MVA and energy MWh sizing |
+| Standard ES only | 32 ES | 32 | 0.9324 pu | 0.118 pu | **No** | No independent reactive support; infeasible despite low loss |
+| **Std ES + STATCOM** | **32 ES + 2 STATCOM** | **34** | **0.9500 pu** | **0.079 pu** | **Yes** | **Lowest-loss feasible hybrid** |
+| Std ES + ESS | 32 ES + 1 ESS | 33 | 0.9544 pu | 0.083 pu | **Yes** | Low-loss hybrid; standard ES reduces ESS from 3 to 1 |
+| **ES-1 only** | **4 ES-1** | **4** | **0.9500 pu** | **0.381 pu** | **Yes** | **Best ES-based standalone; fully replaces STATCOM/ESS** |
+| ES-1 joint | 4 ES-1 | 4 | 0.9500 pu | 0.381 pu | **Yes** | No traditional STATCOM or ESS needed with ES-1 |
+| PV only | PV at 2.7 MW | 0 | 0.8308 pu | 0.588 pu | **No** | Reduces loss but no voltage support |
+| PV + ES-1 | PV (5.4 MW) + 8 ES-1 | 8 | 0.9500 pu | 0.448 pu | **Yes** | Best PV-integrated feasible case; maintains voltage at 200% PV scale |
+
+### Interpretation and Deployment Recommendations
+
+**Standard ES Findings:**
+- Standard ES alone cannot achieve voltage feasibility despite 32 devices and minimal loss (0.118 pu).
+- When combined with traditional support, Standard ES + STATCOM achieves the **lowest feeder loss** (0.079 pu) but requires the full deployment of 32 ES devices plus 2 STATCOM units.
+- Standard ES has a hard substitution floor: STATCOM can be reduced from 7 to 2, and ESS from 3 to 1, but not further eliminated.
+- This proves standard ES cannot independently overcome reactive voltage drops.
+
+**ES-1 (Hou Reactive Model) Findings:**
+- **ES-1 only (4 devices) completely eliminates the need for STATCOM or ESS.**
+- ES-1's independent reactive injection capability is the enabling mechanism, not active flexibility alone.
+- ES-1 is **43% more efficient than STATCOM** (4 vs 7 devices) and near-equivalent to ESS (4 vs 3 devices).
+- With only 4 devices, ES-1 delivers voltage feasibility at 0.9500 pu with 0.381 pu loss — competitive with all traditional methods.
+
+**PV Integration:**
+- PV alone cannot achieve voltage feasibility under the stressed EV profile.
+- PV + ES-1 (8 devices at 200% PV scale) is feasible and represents the **best PV-integrated case** tested.
+- PV reduces feeder losses when combined with ES-1 support.
+
+### Recommendation Categories
+
+1. **No support** — Reference only; severe undervoltage.
+2. **STATCOM only** — Traditional reactive benchmark; high device count (7).
+3. **ESS only** — Best traditional standalone by device count (3), but requires inverter and battery rating normalisation.
+4. **Standard ES only** — Not sufficient alone; infeasible despite 32 devices.
+5. **Standard ES + STATCOM** — Lowest-loss feasible hybrid (0.079 pu), but requires 32 ES + 2 STATCOM = 34 total devices.
+6. **Standard ES + ESS** — Low-loss feasible hybrid (0.083 pu), but requires 32 ES + 1 ESS = 33 total devices.
+7. **ES-1 only** — Best ES-based standalone voltage-recovery option; fully replaces STATCOM and ESS with only 4 devices.
+8. **ES-1 joint** — Best ES-based traditional-support replacement; no traditional hardware needed.
+9. **PV only** — Not sufficient alone under current stressed profile.
+10. **PV + ES-1** — Best PV-integrated feasible case in the tested Stage 10 setup; maintains feasibility at 200% PV penetration.
+
+---
+
 ## PART 4 — COMPLETE RESULTS TABLE
 
 ### All Methods — Everything in One Place
@@ -941,6 +1009,7 @@ Six figures packaged for manuscript submission:
 | `table_qg_reference.csv` | Phase 1 (Mod 4) | Full Qg 24h results |
 | `table_voltage_risk_metrics.csv` | Phase 1 | CVaR and voltage risk metrics |
 | `table_final_case_comparison.csv` | Phase 1 | Final case comparison across modules |
+| `table_device_composition_analysis.csv` | Post-processing | Device composition and installed capacity analysis: all 11 cases with ratings and derived metrics |
 
 ### Figures — Exploratory (`04_results/es_framework/figures/`)
 
@@ -972,6 +1041,10 @@ Six figures packaged for manuscript submission:
 | `fig_candidate_bus_topology.png` | Network diagram with MISOCP-selected ES buses |
 | `fig_cvar_voltage_risk_vs_es_count.png` | CVaR_95 voltage risk vs ES device count |
 | `fig_final_case_comparison.png` | Final case comparison: all modules |
+| `fig_device_composition_feasibility.png` | Voltage feasibility (Vmin) across all 11 device compositions |
+| `fig_device_composition_loss.png` | Total feeder loss across all device compositions |
+| `fig_device_composition_device_count.png` | Stacked device count composition across all cases |
+| `fig_device_composition_installed_capacity.png` | Installed capacity (MVAr, MW, MVA) across device compositions |
 
 ### Figures — Publication (`04_results/es_framework/figures/stage9/`)
 
