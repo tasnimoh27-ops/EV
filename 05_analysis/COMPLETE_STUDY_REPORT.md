@@ -1087,8 +1087,73 @@ A lightweight post-processing analysis that compares individual and hybrid techn
     ├── run_stage6_es1.m
     ├── run_stage7_es1_hybrid.m
     ├── run_stage8_es1_joint.m
-    └── run_stage9_publication_figures.m
+    ├── run_stage9_publication_figures.m
+    └── run_device_composition_analysis.m
 ```
+
+---
+
+## PART 6B — DEVICE COMPOSITION AND INSTALLED CAPACITY ANALYSIS
+
+An additional post-processing analysis was added to compare individual and hybrid technology compositions using the already-generated optimisation results. This analysis goes beyond device count by adding installed rating information, addressing the practical question: **what is the installed capacity requirement (not just device count) for each solution?**
+
+### Scope
+
+- Uses final reported optimisation results from all 11 key cases (baseline, individual technologies, hybrids, PV extensions)
+- Does NOT rerun any solvers or modify framework methodology
+- Lightweight post-processing only
+- Outputs one CSV summary table and four comparison figures
+
+### Key Ratings and Interpretations
+
+| Technology | Rating Basis | Notes |
+|---|---|---|
+| **STATCOM** | Installed MVAr (reactive support capacity) | Per-device: 1.0 MVAr (0.10 pu at 10 MVA base). STATCOM-only case: 7.0 MVAr total. |
+| **ES-1** | Equivalent MVAr reactive support | Per-device: 1.0 MVAr equivalent (0.10 pu Qes_max). ES-1 can independently inject Q alongside active curtailment. |
+| **ESS (battery)** | Inverter MVA + Energy MWh | Requires two normalisation parameters. If solver exact rating unavailable, marked as requiring rating extraction. ESS-only: 3 devices feasible; hybrid ESS: 1 device sufficient with 32 standard ES. |
+| **Standard ES** | Controllable non-critical-load (NCL) capacity | NOT a MVAr/MVA injection device. System-level capacity at ρ=0.70, u_min=0.20 calculated as: P_NCL = 2.17 MW, Q_NCL = 1.35 MVAr, S_NCL = 2.54 MVA. Max reducible fraction: (1−u_min) = 80% of NCL. Standard ES never achieves voltage feasibility alone (32 devices, still infeasible) but reduces requirement for traditional support: STATCOM from 7 to 2, ESS from 3 to 1. |
+| **PV** | Installed MW (active generation capacity) | Stage 10 reference: 2.7 MW at scale 1.0, 5.4 MW at scale 2.0 (200% penetration tested). PV reduces losses but does not solve voltage in the stressed profile alone. |
+
+### Case Summary
+
+| Composition | Devices | Feasible? | Vmin | Loss | Total Installed Capacity | Recommendation |
+|---|---|---|---|---|---|---|
+| No support | 0 | No | 0.8308 pu | 0.6711 pu | — | Reference baseline |
+| STATCOM-only | 7 | Yes | 0.9500 pu | 0.5365 pu | 7.0 MVAr | Traditional reactive benchmark; high device count |
+| ESS-only | 3 | Yes | 0.9500 pu | 0.4337 pu | Requires rating | Best traditional standalone by device count |
+| Standard ES-only | 32 | No | 0.9324 pu | 0.1180 pu | 2.54 MVA NCL | Infeasible despite low loss; no reactive injection |
+| Standard ES + STATCOM | 32+2 | Yes | 0.9500 pu | **0.0786 pu** | 2.0 MVAr STATCOM + 2.54 MVA NCL | **Lowest-loss feasible hybrid** |
+| Standard ES + ESS | 32+1 | Yes | 0.9544 pu | 0.0826 pu | ESS rating + 2.54 MVA NCL | Low-loss hybrid alternative |
+| ES-1 only | 4 | Yes | 0.9500 pu | 0.3806 pu | 4.0 MVAr equivalent | **Best ES-based standalone option** |
+| PV-only | — | No | 0.8308 pu | 0.5878 pu | 2.7 MW | Reduces loss but no voltage support |
+| PV + ES-1 | 8 | Yes | 0.9500 pu | 0.4476 pu | 5.4 MW + 8.0 MVAr equivalent | **Best PV-integrated feasible case** at 200% PV scale |
+
+### Key Findings
+
+1. **Individually, STATCOM, ESS, and ES-1 can restore voltage; standard ES and PV alone cannot.** Standard ES with 32 devices still fails to reach 0.95 pu minimum voltage.
+
+2. **STATCOM-only requires 7 devices (7.0 MVAr).** This is the traditional reactive-support benchmark.
+
+3. **ESS-only requires 3 devices.** Effective but requires both inverter power (MVA) and energy (MWh) ratings to be normalised for fair capital cost and operational life comparison.
+
+4. **Standard ES hybrids achieve the lowest feeder losses (0.0786 pu with 32 ES + 2 STATCOM)** but require full ES deployment across all 32 buses plus traditional reactive support. Standard ES cannot eliminate the final supplemental support floor: even at full deployment, 2 STATCOM or 1 ESS is still required.
+
+5. **ES-1 (Hou reactive model) removes the support floor.** Four ES-1 devices restore voltage without any STATCOM or ESS:
+   - ES-1 only: 4 devices, 4.0 MVAr equivalent reactive support, Vmin=0.9500 pu
+   - Outperforms STATCOM by 43% (4 vs 7 devices)
+   - Outperforms ESS by 33% (4 vs 3 devices, though ESS has higher power density)
+   - **ES-1 is the strongest ES-based standalone voltage-recovery option.**
+
+6. **PV integration is feasible only with ES-1.** Standalone PV at 200% scale (5.4 MW) remains infeasible. Combined with 8 ES-1 devices (8.0 MVAr equivalent), voltage is maintained at 0.95 pu with significant loss reduction (0.4476 pu). This is the best PV-integrated feasible case in the tested Stage 10 setup.
+
+### Output Files
+
+- **Table:** `table_device_composition_analysis.csv` — 11 cases × 34 columns (device counts, ratings, feasibility, loss, recommendations)
+- **Figures:**
+  - `fig_device_composition_feasibility.png` — Vmin across all compositions (green = feasible, red = infeasible)
+  - `fig_device_composition_loss.png` — Total feeder loss across all cases
+  - `fig_device_composition_device_count.png` — Stacked bar chart of device composition
+  - `fig_device_composition_installed_capacity.png` — Installed ratings (MVAr, MW, MVA) side by side
 
 ---
 
