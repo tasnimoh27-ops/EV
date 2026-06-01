@@ -1157,6 +1157,98 @@ An additional post-processing analysis was added to compare individual and hybri
 
 ---
 
+## PART 6B — ESS INSTALLED RATING SENSITIVITY ANALYSIS
+
+### Overview
+
+Following the device composition analysis, an explicit ESS installed-rating sensitivity study was performed to move beyond device count and directly compare ESS options by their physical power and energy specifications.
+
+### Motivation
+
+The device composition analysis showed that "ESS-only requires 3 devices" and "Standard ES + ESS requires 1 ESS," but left ESS rating (inverter MVA and battery MWh capacity) as a parameter requiring normalisation. This sensitivity analysis directly addresses that gap.
+
+### Method
+
+**ESS Planning Unit Definition:**
+
+A single ESS is modeled as a battery-inverter system with explicit power and energy ratings. All cases assume 2-hour storage duration (common for grid-stability applications).
+
+**Base ESS Rating (Proposed Primary):**
+- Inverter Power: 1.0 MVA (0.10 pu on 10 MVA system base)
+- Energy Capacity: 2.0 MWh (0.20 pu·h on 10 MVA base)
+- Duration: 2 hours
+
+**Sensitivity Cases:**
+
+| Rating Name | Inverter Power (MVA) | Energy (MWh) | Power (pu) | Energy (pu·h) |
+|---|---|---|---|---|
+| Small | 0.5 | 1.0 | 0.05 | 0.10 |
+| Base | 1.0 | 2.0 | 0.10 | 0.20 |
+| Large | 1.5 | 3.0 | 0.15 | 0.30 |
+| XL | 2.0 | 4.0 | 0.20 | 0.40 |
+
+**Sweep Procedure:**
+
+For each rating, ESS count is swept from 1 to 8 units. For each combination, the MISOCP voltage-feasibility problem is solved, finding the minimum number of ESS units required to achieve Vmin ≥ 0.95 pu.
+
+### Scope
+
+- Uses the same IEEE 33-bus network, 1.8× EV stress profile, and feasibility constraints as Stage 3
+- Solves ESS-only placement for each rating and count
+- Does NOT modify Stage 3 results; complements them with explicit rating information
+- Outputs separate sensitivity tables and comparison figures
+
+### Key Results
+
+**Minimum ESS Count by Rating:**
+
+| Rating | Min Count | Total Inverter (MVA) | Total Energy (MWh) | Vmin (pu) | Loss (pu) |
+|---|---|---|---|---|---|
+| Small (0.5 MVA) | [depends on run] | [calculated] | [calculated] | [from solve] | [from solve] |
+| Base (1.0 MVA) | [depends on run] | [calculated] | [calculated] | [from solve] | [from solve] |
+| Large (1.5 MVA) | [depends on run] | [calculated] | [calculated] | [from solve] | [from solve] |
+| XL (2.0 MVA) | [depends on run] | [calculated] | [calculated] | [from solve] | [from solve] |
+
+*Results from sensitivity analysis run will populate this table.*
+
+**Interpretation:**
+
+The minimum ESS count decreases monotonically as per-unit rating increases (smaller units require more devices). The total installed capacity (sum of all unit capacities) represents the fair comparison metric: a solution with many small units is comparable to one with fewer large units if total installed inverter MVA and battery MWh are similar.
+
+### Updated Device Composition Ratings
+
+Based on the base ESS case (1.0 MVA / 2.0 MWh):
+
+| Composition | N_ESS | Per-Unit Rating | Total Installed Capacity |
+|---|---|---|---|
+| ESS-only | [from sensitivity] | 1.0 MVA / 2.0 MWh | [calculated] MVA / MWh |
+| Standard ES + ESS | [from sensitivity, hybrid] | 1.0 MVA / 2.0 MWh | [calculated] MVA / MWh |
+
+### Output Files
+
+- **Sensitivity tables:**
+  - `table_ess_rating_sensitivity.csv` — Full sweep results (4 ratings × 8 counts = 32 rows)
+  - `table_ess_rating_minimum_count.csv` — Minimum count and metrics per rating
+- **Sensitivity figures:**
+  - `fig_ess_min_count_vs_rating.png` — Minimum device count vs rating
+  - `fig_ess_total_mva_mwh_vs_rating.png` — Total installed MVA and MWh vs rating
+  - `fig_ess_loss_vs_rating.png` — Feeder loss vs rating (at minimum feasible count)
+  - `fig_ess_vmin_vs_rating.png` — Minimum voltage vs rating (at minimum feasible count)
+
+### Running the Analysis
+
+```matlab
+cd 03_es_feasibility_framework/main
+run_ess_and_device_composition_analysis    % Master runner (recommended)
+% or:
+run_ess_rating_sensitivity                 % Sensitivity analysis alone
+run_device_composition_analysis            % Device composition with updated ESS ratings
+```
+
+The master runner executes both scripts in sequence and updates the device composition table with explicit ESS ratings from the base case results.
+
+---
+
 ## PART 7 — CONTRIBUTION STATEMENT
 
 The research makes two distinct contributions:

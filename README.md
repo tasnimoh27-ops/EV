@@ -109,7 +109,12 @@ run_stage8_es1_joint             % ES-1 joint solver
 run_stage9_publication_figures   % generate all publication figures
 
 % Post-processing analysis:
-run_device_composition_analysis  % Device composition and installed capacity analysis
+% Integrated ESS sensitivity and device composition analysis (recommended):
+run_ess_and_device_composition_analysis  % Master runner: ESS rating sensitivity + device composition
+
+% or run individually:
+run_ess_rating_sensitivity               % ESS installed-rating sensitivity analysis
+run_device_composition_analysis          % Device composition and installed capacity analysis
 
 % Results saved to 04_results/es_framework/
 ```
